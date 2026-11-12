@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090909">
+<title>MDS PLAY — Stream Your World</title>
+<style>
+:root{--red:#e50914;--bg:#090909;--muted:#b8b8b8}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:#fff;font-family:Arial,Helvetica,sans-serif}
+header{height:72px;position:fixed;inset:0 0 auto;z-index:10;display:flex;align-items:center;gap:38px;padding:0 4.5%;background:linear-gradient(#080808ed,#080808a8,transparent);transition:.25s}
+header.scrolled{background:#090909f5;box-shadow:0 4px 20px #0008}
+.brand{font-size:29px;font-weight:900;letter-spacing:-1.5px;color:var(--red);white-space:nowrap}.brand small{font-size:10px;display:block;color:#fff;letter-spacing:4px;margin-top:-3px}
+nav{display:flex;gap:22px;align-items:center}nav a{font-size:14px;color:#eee;text-decoration:none}nav a:hover{color:#aaa}
+.right{margin-left:auto;display:flex;align-items:center;gap:20px}.search{background:#111c;border:1px solid #aaa8;color:white;padding:9px 12px;border-radius:3px;width:180px;outline:none}.profile{width:31px;height:31px;border-radius:4px;background:linear-gradient(135deg,#ed1b2f,#6814a5);display:grid;place-items:center;font-weight:bold}
+.hero{height: min(760px,86vh);min-height:560px;display:flex;align-items:center;padding:100px 5% 80px;position:relative;overflow:hidden;background:radial-gradient(ellipse at 72% 36%,#762d3a 0%,#34131d 23%,transparent 54%),linear-gradient(90deg,#090909 0%,#090909e8 36%,#09090950 70%,#090909 100%),linear-gradient(135deg,#111,#35101c 55%,#080808)}
+.hero:before{content:"";position:absolute;right:9%;top:18%;width:38vw;height:48vw;max-height:520px;max-width:470px;border-radius:48% 48% 12% 12%;background:linear-gradient(145deg,#e6a16b,#7a2336 42%,#130d18 75%);filter:drop-shadow(0 25px 50px #000b);transform:rotate(7deg);opacity:.8;mask-image:linear-gradient(to bottom,#000 70%,transparent)}
+.hero:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#090909 0%,transparent 28%,transparent 75%,#09090955)}
+.hero-content{position:relative;z-index:2;max-width:590px;margin-top:65px}.eyebrow{font-size:13px;letter-spacing:5px;color:#ddd;font-weight:bold}.hero h1{font-size:clamp(48px,7vw,86px);line-height:.95;margin:18px 0 15px;letter-spacing:-3px;text-shadow:0 4px 20px #0008}.hero p{font-size:17px;line-height:1.55;color:#e0e0e0;max-width:520px;text-shadow:0 2px 10px #000}
+.meta{display:flex;gap:12px;align-items:center;color:#ddd;font-size:13px;margin:18px 0}.top10{color:#fff;font-weight:bold}.top10 b{background:var(--red);padding:4px 7px;border-radius:3px;margin-right:6px}
+.actions{display:flex;gap:12px;margin-top:25px}.btn{border:0;border-radius:4px;padding:12px 23px;font-size:16px;font-weight:bold;cursor:pointer}.btn-light{background:#fff;color:#111}.btn-dark{background:#555b;color:#fff}.btn:hover{filter:brightness(.85)}
+main{margin-top:-65px;position:relative;z-index:3}.shelf{padding:0 4.5%;margin:0 0 34px}.shelf h2{font-size:21px;margin:0 0 14px}.cards{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 16px;scrollbar-width:thin;scrollbar-color:#555 transparent}.card{flex:0 0 190px;height:270px;border-radius:5px;position:relative;overflow:hidden;cursor:pointer;transition:transform .22s,box-shadow .22s;background:#222}.card:hover{transform:scale(1.07);z-index:2;box-shadow:0 10px 28px #000b}.art{position:absolute;inset:0;display:flex;align-items:end;padding:15px;background:linear-gradient(0deg,#000e,transparent 60%),var(--art)}.art:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 70% 22%,#ffffff35,transparent 35%),linear-gradient(145deg,transparent 30%,#0005)}.poster-title{position:relative;font-weight:900;font-size:23px;line-height:.95;text-transform:uppercase;letter-spacing:-.8px;text-shadow:0 3px 9px #000}.poster-title small{display:block;font-size:9px;letter-spacing:3px;margin-bottom:8px;color:#ddd}
+.rank{position:absolute;top:9px;left:9px;background:var(--red);font-size:9px;font-weight:bold;padding:5px 7px;border-radius:2px;z-index:1}
+.card:nth-child(1) .art{--art:linear-gradient(135deg,#8e2431,#f29b58 42%,#21142c)}.card:nth-child(2) .art{--art:linear-gradient(145deg,#102b4c,#3f87a5 50%,#10131d)}.card:nth-child(3) .art{--art:linear-gradient(145deg,#171717,#8b6a3d 55%,#261314)}.card:nth-child(4) .art{--art:linear-gradient(145deg,#25104b,#9c3d75 55%,#f19a58)}.card:nth-child(5) .art{--art:linear-gradient(145deg,#193a35,#72a58b 48%,#111)}.card:nth-child(6) .art{--art:linear-gradient(145deg,#381b1b,#ba343d 50%,#16131a)}.card:nth-child(7) .art{--art:linear-gradient(145deg,#162e59,#7a9bd0 50%,#1a1624)}.card:nth-child(8) .art{--art:linear-gradient(145deg,#4b2c17,#c58d45 50%,#21130c)}
+.card:nth-child(2n) .poster-title{font-size:19px}
+footer{border-top:1px solid #252525;margin-top:55px;padding:30px 5%;color:#777;font-size:12px;display:flex;justify-content:space-between}
+.modal{display:none;position:fixed;inset:0;background:#000c;z-index:20;align-items:center;justify-content:center;padding:20px}.modal.show{display:flex}.dialog{max-width:540px;width:100%;background:#181818;border-radius:8px;overflow:hidden;box-shadow:0 20px 80px #000}.dialog-art{height:220px;background:linear-gradient(120deg,#711c32,#df8758,#15152b);display:flex;align-items:end;padding:22px;font-size:32px;font-weight:900}.dialog-body{padding:22px}.dialog-body p{color:#bbb;line-height:1.5}.close{float:right;background:none;border:0;color:#fff;font-size:25px;cursor:pointer}
+@media(max-width:760px){header{height:62px;padding:0 4%;gap:15px}.brand{font-size:23px}nav{gap:12px}nav a{font-size:11px}.right{gap:8px}.search{width:100px;padding:7px}.hero{min-height:570px;height:78vh;padding:90px 5% 60px}.hero:before{right:-5%;top:23%;width:68vw;height:78vw;opacity:.48}.hero-content{margin-top:80px}.hero h1{font-size:53px}.hero p{font-size:14px}.shelf{padding:0 4%}.card{flex-basis:145px;height:215px}.shelf h2{font-size:18px}.actions .btn{font-size:14px;padding:11px 16px}}
+@media(max-width:430px){nav a:nth-child(3){display:none}.search{width:82px}.hero h1{font-size:46px}}
+</style>
+</head>
+<body>
+<header id="header"><div class="brand">MDS PLAY<small>STREAM YOUR WORLD</small></div><nav><a href="#home">Home</a><a href="#live">Live TV</a><a href="#movies">Movies</a><a href="#series">Web Series</a></nav><div class="right"><input id="search" class="search" placeholder="Search titles..." aria-label="Search titles"><div class="profile">M</div></div></header>
+<section class="hero" id="home"><div class="hero-content"><div class="eyebrow">MDS PLAY ORIGINAL EXPERIENCE</div><h1>YOUR NEXT<br>BIG WATCH.</h1><div class="meta"><span>2026</span><span>•</span><span>Drama · Thriller</span><span>•</span><span>HD</span></div><p>Stories that pull you in. Discover live television, movies and web series — all in one place.</p><div class="actions"><button class="btn btn-light" onclick="showInfo('Featured on MDS PLAY')">▶ &nbsp; Play</button><button class="btn btn-dark" onclick="showInfo('Featured on MDS PLAY')">ⓘ &nbsp; More Info</button></div></div></section>
+<main>
+<section class="shelf" id="live"><h2>📡 &nbsp; Live TV</h2><div class="cards">
+<div class="card" data-title="News Live"><div class="rank">LIVE</div><div class="art"><div class="poster-title"><small>MDS PLAY CHANNEL</small>NEWS<br>LIVE</div></div></div>
+<div class="card" data-title="Entertainment"><div class="rank">LIVE</div><div class="art"><div class="poster-title"><small>NOW ON</small>ENTERTAIN<br>MENT</div></div></div>
+<div class="card" data-title="Music Live"><div class="rank">LIVE</div><div class="art"><div class="poster-title"><small>24/7</small>MUSIC<br>LIVE</div></div></div>
+<div class="card" data-title="Kids Zone"><div class="rank">LIVE</div><div class="art"><div class="poster-title"><small>FAMILY</small>KIDS<br>ZONE</div></div></div>
+<div class="card" data-title="Sports Live"><div class="rank">LIVE</div><div class="art"><div class="poster-title"><small>SPORTS</small>GAME<br>ON</div></div></div>
+</div></section>
+<section class="shelf" id="movies"><h2>🎬 &nbsp; Movies to Explore</h2><div class="cards">
+<div class="card" data-title="The Last Horizon"><div class="art"><div class="poster-title"><small>A MDS PLAY PICK</small>THE LAST<br>HORIZON</div></div></div>
+<div class="card" data-title="Deep Blue"><div class="art"><div class="poster-title"><small>EDGE OF THE UNKNOWN</small>DEEP<br>BLUE</div></div></div>
+<div class="card" data-title="The Witness"><div class="art"><div class="poster-title"><small>EVERY SECRET HAS A COST</small>THE<br>WITNESS</div></div></div>
+<div class="card" data-title="Red Moon"><div class="art"><div class="poster-title"><small>ONE NIGHT CHANGES ALL</small>RED<br>MOON</div></div></div>
+<div class="card" data-title="Wild Earth"><div class="art"><div class="poster-title"><small>BEYOND THE MAP</small>WILD<br>EARTH</div></div></div>
+<div class="card" data-title="Final Hour"><div class="art"><div class="poster-title"><small>TIME IS RUNNING OUT</small>FINAL<br>HOUR</div></div></div>
+</div></section>
+<section class="shelf" id="series"><h2>📺 &nbsp; Binge-worthy Web Series</h2><div class="cards">
+<div class="card" data-title="Shadow Code"><div class="art"><div class="poster-title"><small>SEASON 1</small>SHADOW<br>CODE</div></div></div>
+<div class="card" data-title="City of Secrets"><div class="art"><div class="poster-title"><small>NEW SERIES</small>CITY OF<br>SECRETS</div></div></div>
+<div class="card" data-title="The Divide"><div class="art"><div class="poster-title"><small>ALL EPISODES</small>THE<br>DIVIDE</div></div></div>
+<div class="card" data-title="Unknown"><div class="art"><div class="poster-title"><small>NO ONE IS SAFE</small>UN<br>KNOWN</div></div></div>
+<div class="card" data-title="Beyond"><div class="art"><div class="poster-title"><small>GO BEYOND</small>BEYOND</div></div></div>
+</div></section>
+</main>
+<footer><span>© 2026 MDS PLAY</span><span>Stream your world.</span></footer>
+<div class="modal" id="modal" onclick="if(event.target===this)closeInfo()"><div class="dialog"><div class="dialog-art">MDS PLAY <button class="close" onclick="closeInfo()">×</button></div><div class="dialog-body"><h2 id="modalTitle">MDS PLAY</h2><p>This is a visual website preview. Connect only official channels, licensed streams, or videos you have permission to distribute to enable playback.</p><button class="btn btn-light" onclick="closeInfo()">Got it</button></div></div></div>
+<script>
+const header=document.getElementById('header');window.addEventListener('scroll',()=>header.classList.toggle('scrolled',scrollY>30));
+function showInfo(title){document.getElementById('modalTitle').textContent=title;document.getElementById('modal').classList.add('show')}
+function closeInfo(){document.getElementById('modal').classList.remove('show')}
+document.querySelectorAll('.card').forEach(card=>card.addEventListener('click',()=>showInfo(card.dataset.title)));
+document.getElementById('search').addEventListener('input',e=>{let q=e.target.value.toLowerCase();document.querySelectorAll('.card').forEach(c=>c.style.display=c.dataset.title.toLowerCase().includes(q)?'block':'none')});
+</script>
+</body></html>
