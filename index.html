@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -5,8 +6,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#07152f">
 <title>MDSPly | Watch</title>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17"></script>
 <style>
-:root{--bg:#07152f;--panel:#102448;--blue:#377dff;--text:#f5f8ff;--muted:#a9b8d3}
+:root{--bg:#07152f;--blue:#377dff;--text:#f5f8ff;--muted:#a9b8d3}
 *{box-sizing:border-box}
 body{margin:0;background:radial-gradient(circle at 80% -10%,#173c78,transparent 35%),var(--bg);color:var(--text);font:15px system-ui,Arial}
 header{position:sticky;top:0;z-index:5;background:#07152fee;backdrop-filter:blur(14px);border-bottom:1px solid #ffffff18;padding:14px max(18px,calc((100% - 1120px)/2));display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
@@ -27,13 +29,15 @@ button{border:0;border-radius:12px;padding:10px 15px;background:var(--blue);colo
 .empty{padding:20px;border:1px dashed #ffffff35;border-radius:14px;color:var(--muted)}
 footer{border-top:1px solid #ffffff18;padding:22px;text-align:center;color:var(--muted);font-size:12px}
 .modal{position:fixed;inset:0;background:#000b;display:none;place-items:center;padding:16px;z-index:10}
-.modal.show{display:grid}.box{width:min(100%,480px);max-height:90vh;overflow:auto;background:#0d2040;border:1px solid #ffffff2b;border-radius:18px;padding:20px}
+.modal.show{display:grid}.box{width:min(100%,650px);max-height:90vh;overflow:auto;background:#0d2040;border:1px solid #ffffff2b;border-radius:18px;padding:20px}
 .box h2{margin-top:0}.field{display:grid;gap:6px;margin:12px 0}.field label{color:#c4d2e9;font-size:13px}
 .field input,.field select,.field textarea{width:100%;padding:12px;border:1px solid #ffffff30;border-radius:10px;background:#07152f;color:white;font:inherit}
 .field textarea{min-height:75px}.row{display:flex;gap:9px;flex-wrap:wrap}.row>*{flex:1}
-.hidden{display:none!important}.player{width:100%;aspect-ratio:16/9;background:#000;border:1px solid #ffffff22;border-radius:14px;margin:10px 0}
-.player iframe{width:100%;height:100%;border:0;border-radius:14px}
-.note{font-size:12px;color:var(--muted);line-height:1.5}.adminlist{display:grid;gap:8px}
+.hidden{display:none!important}
+.player{width:100%;aspect-ratio:16/9;background:#000;border:1px solid #ffffff22;border-radius:14px;margin:10px 0;overflow:hidden}
+.player video,.player iframe{width:100%;height:100%;border:0;object-fit:contain;background:#000}
+.note{font-size:12px;color:var(--muted);line-height:1.5}
+.adminlist{display:grid;gap:8px}
 .adminrow{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#ffffff0d;padding:10px;border-radius:10px}
 </style>
 </head>
@@ -53,7 +57,7 @@ footer{border-top:1px solid #ffffff18;padding:22px;text-align:center;color:var(-
 <section class="hero">
 <div class="eyebrow">Your entertainment space</div>
 <h1>Watch what you love.</h1>
-<p>Explore Live TV, Movies and Web Series in one place. MDSPly lists content added by its administrator.</p>
+<p>Explore Live TV, Movies and Web Series in one place.</p>
 <button id="browseBtn">Explore content</button>
 </section>
 <section class="section">
@@ -61,33 +65,35 @@ footer{border-top:1px solid #ffffff18;padding:22px;text-align:center;color:var(-
 <div id="catalog" class="grid"><div class="empty">Loading content…</div></div>
 </section>
 </main>
-
 <footer>© <span id="year"></span> MDSPly. Content is provided by its respective rights holders.</footer>
 
 <div class="modal" id="adminModal">
 <div class="box">
 <div class="row"><h2>Admin access</h2><button class="secondary" id="adminClose">Close</button></div>
 <div id="loginArea">
-<p class="note">Public visitors do not need an account. Admin access uses the administrator account created in Firebase Authentication.</p>
-<div class="field"><label>Admin email</label><input id="adminEmail" type="email" autocomplete="username" placeholder="Your admin email"></div>
-<div class="field"><label>Admin password</label><input id="adminPassword" type="password" autocomplete="current-password" placeholder="Firebase admin password"></div>
-<div class="field"><label>Admin code</label><input id="adminCode" type="password" placeholder="Your private code"></div>
+<p class="note">Administrator sign-in</p>
+<div class="field"><label>Admin email</label><input id="adminEmail" type="email" autocomplete="username"></div>
+<div class="field"><label>Admin password</label><input id="adminPassword" type="password" autocomplete="current-password"></div>
+<div class="field"><label>Admin code</label><input id="adminCode" type="password"></div>
 <button id="loginBtn">Unlock admin panel</button>
 <p class="note" id="loginMsg"></p>
 </div>
+
 <div id="panelArea" class="hidden">
 <h3>Add content</h3>
-<div class="field"><label>Title</label><input id="itemTitle" placeholder="Example: News Channel"></div>
+<div class="field"><label>Title</label><input id="itemTitle" placeholder="Movie or channel name"></div>
 <div class="row">
-<div class="field"><label>Category</label><select id="itemCategory"><option>Live TV</option><option>Movie</option><option>Web Series</option></select></div>
+<div class="field"><label>Category</label>
+<select id="itemCategory"><option>Live TV</option><option>Movie</option><option>Web Series</option></select></div>
 <div class="field"><label>Poster image URL (optional)</label><input id="itemPoster" placeholder="https://..."></div>
 </div>
-<div class="field"><label>Authorized video / embed URL</label><input id="itemUrl" placeholder="https://..." type="url"></div>
+<div class="field"><label>Video / Stream / Embed URL</label><input id="itemUrl" placeholder="Paste your authorized URL here" type="url"></div>
 <div class="field"><label>Description (optional)</label><textarea id="itemDescription"></textarea></div>
 <button id="saveItem">Save content</button>
 <button id="logoutBtn" class="secondary">Sign out</button>
 <p class="note" id="saveMsg"></p>
-<h3>Manage content</h3><div id="adminList" class="adminlist"></div>
+<h3>Manage content</h3>
+<div id="adminList" class="adminlist"></div>
 </div>
 </div>
 </div>
@@ -97,6 +103,7 @@ footer{border-top:1px solid #ffffff18;padding:22px;text-align:center;color:var(-
 <div class="row"><h2 id="watchTitle">Watch</h2><button class="secondary" id="watchClose">Close</button></div>
 <div id="watchFrame" class="player"></div>
 <p class="note" id="watchDescription"></p>
+<p class="note" id="playerMsg"></p>
 </div>
 </div>
 
@@ -118,11 +125,9 @@ measurementId:'G-1BMVS9B5MF'
 const app=initializeApp(firebaseConfig);
 const db=getFirestore(app);
 const auth=getAuth(app);
-
-// This is only an extra interface check, NOT database security.
 const ADMIN_CODE='Vision';
 
-let items=[],filter='all',isAdmin=false;
+let items=[],filter='all',isAdmin=false,currentHls=null;
 const $=id=>document.getElementById(id);
 
 function safeUrl(value){
@@ -139,7 +144,7 @@ const shown=filter==='all'?items:items.filter(x=>x.category===filter);
 $('sectionTitle').textContent=filter==='all'?'Latest content':filter;
 $('catalog').innerHTML='';
 if(!shown.length){
-$('catalog').innerHTML='<div class="empty">No content added yet. Please check again later.</div>';
+$('catalog').innerHTML='<div class="empty">No content added yet.</div>';
 return;
 }
 for(const x of shown){
@@ -154,22 +159,89 @@ $('catalog').append(card);
 }
 }
 
+function stopPlayer(){
+if(currentHls){currentHls.destroy();currentHls=null;}
+$('watchFrame').innerHTML='';
+}
+
 function watch(x){
+stopPlayer();
 const url=safeUrl(x.url);
 $('watchTitle').textContent=x.title||'Watch';
 $('watchDescription').textContent=x.description||'';
-$('watchFrame').innerHTML='';
-if(url){
+$('playerMsg').textContent='';
+$('watchModal').classList.add('show');
+
+if(!url){
+$('playerMsg').textContent='Invalid video URL.';
+return;
+}
+
+const isHls=/\.m3u8($|\?)/i.test(url);
+const isDirect=/\.(mp4|webm|ogg|m4v)($|\?)/i.test(url);
+const isYouTube=/youtube\.com|youtu\.be/i.test(url);
+const isVimeo=/vimeo\.com/i.test(url);
+
+if(isYouTube||isVimeo){
+let embed='';
+try{
+const u=new URL(url);
+if(isYouTube){
+let id=u.hostname.includes('youtu.be')?u.pathname.slice(1):u.searchParams.get('v')||u.pathname.split('/').pop();
+if(u.pathname.includes('/embed/'))id=u.pathname.split('/embed/')[1].split('/')[0];
+embed='https://www.youtube.com/embed/'+encodeURIComponent(id);
+}else{
+const id=u.pathname.split('/').filter(Boolean).pop();
+embed='https://player.vimeo.com/video/'+encodeURIComponent(id);
+}
+}catch{}
+if(!embed){$('playerMsg').textContent='Invalid embed URL.';return;}
+const frame=document.createElement('iframe');
+frame.src=embed;
+frame.allow='autoplay; fullscreen; picture-in-picture; encrypted-media';
+frame.allowFullscreen=true;
+$('watchFrame').append(frame);
+return;
+}
+
+if(isHls||isDirect){
+const video=document.createElement('video');
+video.controls=true;
+video.playsInline=true;
+video.preload='metadata';
+video.setAttribute('controlsList','nodownload');
+$('watchFrame').append(video);
+
+if(isHls){
+if(video.canPlayType('application/vnd.apple.mpegurl')){
+video.src=url;
+}else if(window.Hls&&Hls.isSupported()){
+currentHls=new Hls();
+currentHls.loadSource(url);
+currentHls.attachMedia(video);
+currentHls.on(Hls.Events.ERROR,(event,data)=>{
+if(data.fatal){
+$('playerMsg').textContent='Stream unavailable. Check URL, expiry, CORS or access permission.';
+}
+});
+}else{
+$('playerMsg').textContent='HLS is not supported in this browser.';
+}
+}else{
+video.src=url;
+}
+video.onerror=()=>$('playerMsg').textContent='Video unavailable. The link may be expired or blocked.';
+return;
+}
+
+// Generic authorized embed URL fallback
 const frame=document.createElement('iframe');
 frame.src=url;
 frame.allow='autoplay; fullscreen; picture-in-picture';
 frame.allowFullscreen=true;
-frame.referrerPolicy='no-referrer';
+frame.referrerPolicy='strict-origin-when-cross-origin';
 $('watchFrame').append(frame);
-}else{
-$('watchFrame').textContent='No valid video URL is available.';
-}
-$('watchModal').classList.add('show');
+$('playerMsg').textContent='If the provider blocks embedding, this video cannot play inside MDSPly.';
 }
 
 function renderAdmin(){
@@ -198,7 +270,7 @@ items=snap.docs.map(d=>({id:d.id,...d.data()}));
 render();
 if(isAdmin)renderAdmin();
 },err=>{
-$('catalog').innerHTML='<div class="empty">Could not load content. Check Firestore security rules.</div>';
+$('catalog').innerHTML='<div class="empty">Could not load content. Check Firestore rules.</div>';
 console.error(err);
 });
 
@@ -206,7 +278,7 @@ $('adminOpen').onclick=()=>$('adminModal').classList.add('show');
 $('adminClose').onclick=()=>$('adminModal').classList.remove('show');
 $('watchClose').onclick=()=>{
 $('watchModal').classList.remove('show');
-$('watchFrame').innerHTML='';
+stopPlayer();
 };
 $('browseBtn').onclick=()=>$('catalog').scrollIntoView({behavior:'smooth'});
 
@@ -240,7 +312,7 @@ $('saveItem').onclick=async()=>{
 const title=$('itemTitle').value.trim();
 const url=safeUrl($('itemUrl').value.trim());
 if(!title||!url){
-$('saveMsg').textContent='Title and a valid video/embed URL are required.';
+$('saveMsg').textContent='Title and a valid URL are required.';
 return;
 }
 try{
