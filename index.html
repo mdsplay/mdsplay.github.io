@@ -6,42 +6,112 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#07152f">
 <title>MDSPly | Watch</title>
+
 <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17"></script>
+<script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
+
 <style>
-:root{--bg:#07152f;--blue:#377dff;--text:#f5f8ff;--muted:#a9b8d3}
+:root{
+--bg:#07152f;
+--blue:#377dff;
+--text:#f5f8ff;
+--muted:#a9b8d3
+}
 *{box-sizing:border-box}
-body{margin:0;background:radial-gradient(circle at 80% -10%,#173c78,transparent 35%),var(--bg);color:var(--text);font:15px system-ui,Arial}
-header{position:sticky;top:0;z-index:5;background:#07152fee;backdrop-filter:blur(14px);border-bottom:1px solid #ffffff18;padding:14px max(18px,calc((100% - 1120px)/2));display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.brand{font-size:25px;font-weight:900;letter-spacing:-1px}.brand span{color:#65a0ff}
+body{
+margin:0;
+background:radial-gradient(circle at 80% -10%,#173c78,transparent 35%),var(--bg);
+color:var(--text);
+font:15px system-ui,Arial
+}
+header{
+position:sticky;top:0;z-index:5;
+background:#07152fee;
+backdrop-filter:blur(14px);
+border-bottom:1px solid #ffffff18;
+padding:14px max(18px,calc((100% - 1120px)/2));
+display:flex;align-items:center;justify-content:space-between;
+gap:12px;flex-wrap:wrap
+}
+.brand{font-size:25px;font-weight:900;letter-spacing:-1px}
+.brand span{color:#65a0ff}
 .nav{display:flex;gap:8px;flex-wrap:wrap}
-button{border:0;border-radius:12px;padding:10px 15px;background:var(--blue);color:white;font-weight:700;cursor:pointer}
+button{
+border:0;border-radius:12px;padding:10px 15px;
+background:var(--blue);color:white;font-weight:700;cursor:pointer
+}
 .secondary{background:#ffffff14;border:1px solid #ffffff25}
 .wrap{max-width:1120px;margin:auto;padding:24px 18px 70px}
-.hero{padding:36px 26px;border:1px solid #ffffff20;border-radius:24px;background:linear-gradient(120deg,#153b76,#0c2144 65%,#0b1a34);box-shadow:0 20px 60px #0005}
-.eyebrow{color:#8db7ff;font-weight:800;text-transform:uppercase;letter-spacing:2px;font-size:11px}
+.hero{
+padding:36px 26px;border:1px solid #ffffff20;border-radius:24px;
+background:linear-gradient(120deg,#153b76,#0c2144 65%,#0b1a34);
+box-shadow:0 20px 60px #0005
+}
+.eyebrow{
+color:#8db7ff;font-weight:800;text-transform:uppercase;
+letter-spacing:2px;font-size:11px
+}
 .hero h1{font-size:clamp(32px,6vw,54px);line-height:1.02;margin:12px 0}
 .hero p{color:#c2d0e8;max-width:560px;line-height:1.6}
-.section{margin-top:32px}.section h2{font-size:22px;margin:0 0 14px}
+.section{margin-top:32px}
+.section h2{font-size:22px;margin:0 0 14px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:14px}
-.item{background:linear-gradient(150deg,#142d54,#0d1e3b);border:1px solid #ffffff17;border-radius:17px;overflow:hidden}
-.poster{aspect-ratio:16/10;background:linear-gradient(135deg,#1e4b8b,#101c36);display:grid;place-items:center;color:#b8d0ff;font-size:35px}
-.itembody{padding:13px}.item h3{margin:0 0 6px;font-size:16px}.item p{margin:0 0 12px;color:var(--muted);font-size:12px}
+.item{
+background:linear-gradient(150deg,#142d54,#0d1e3b);
+border:1px solid #ffffff17;border-radius:17px;overflow:hidden
+}
+.poster{
+aspect-ratio:16/10;background:linear-gradient(135deg,#1e4b8b,#101c36);
+display:grid;place-items:center;color:#b8d0ff;font-size:35px
+}
+.itembody{padding:13px}
+.item h3{margin:0 0 6px;font-size:16px}
+.item p{margin:0 0 12px;color:var(--muted);font-size:12px}
 .empty{padding:20px;border:1px dashed #ffffff35;border-radius:14px;color:var(--muted)}
-footer{border-top:1px solid #ffffff18;padding:22px;text-align:center;color:var(--muted);font-size:12px}
-.modal{position:fixed;inset:0;background:#000b;display:none;place-items:center;padding:16px;z-index:10}
-.modal.show{display:grid}.box{width:min(100%,650px);max-height:90vh;overflow:auto;background:#0d2040;border:1px solid #ffffff2b;border-radius:18px;padding:20px}
-.box h2{margin-top:0}.field{display:grid;gap:6px;margin:12px 0}.field label{color:#c4d2e9;font-size:13px}
-.field input,.field select,.field textarea{width:100%;padding:12px;border:1px solid #ffffff30;border-radius:10px;background:#07152f;color:white;font:inherit}
-.field textarea{min-height:75px}.row{display:flex;gap:9px;flex-wrap:wrap}.row>*{flex:1}
+footer{
+border-top:1px solid #ffffff18;padding:22px;text-align:center;
+color:var(--muted);font-size:12px
+}
+.modal{
+position:fixed;inset:0;background:#000b;display:none;
+place-items:center;padding:16px;z-index:10
+}
+.modal.show{display:grid}
+.box{
+width:min(100%,650px);max-height:90vh;overflow:auto;
+background:#0d2040;border:1px solid #ffffff2b;
+border-radius:18px;padding:20px
+}
+.box h2{margin-top:0}
+.field{display:grid;gap:6px;margin:12px 0}
+.field label{color:#c4d2e9;font-size:13px}
+.field input,.field select,.field textarea{
+width:100%;padding:12px;border:1px solid #ffffff30;
+border-radius:10px;background:#07152f;color:white;font:inherit
+}
+.field textarea{min-height:75px}
+.row{display:flex;gap:9px;flex-wrap:wrap}
+.row>*{flex:1;min-width:0}
 .hidden{display:none!important}
-.player{width:100%;aspect-ratio:16/9;background:#000;border:1px solid #ffffff22;border-radius:14px;margin:10px 0;overflow:hidden}
-.player video,.player iframe{width:100%;height:100%;border:0;object-fit:contain;background:#000}
+.player{
+width:100%;aspect-ratio:16/9;background:#000;
+border:1px solid #ffffff22;border-radius:14px;
+margin:10px 0;overflow:hidden
+}
+.player video,.player iframe{
+width:100%;height:100%;border:0;object-fit:contain;background:#000
+}
 .note{font-size:12px;color:var(--muted);line-height:1.5}
 .adminlist{display:grid;gap:8px}
-.adminrow{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#ffffff0d;padding:10px;border-radius:10px}
+.adminrow{
+display:flex;align-items:center;justify-content:space-between;
+gap:10px;background:#ffffff0d;padding:10px;border-radius:10px
+}
 </style>
 </head>
+
 <body>
+
 <header>
 <div class="brand">MDS<span>Ply</span></div>
 <nav class="nav">
@@ -60,47 +130,99 @@ footer{border-top:1px solid #ffffff18;padding:22px;text-align:center;color:var(-
 <p>Explore Live TV, Movies and Web Series in one place.</p>
 <button id="browseBtn">Explore content</button>
 </section>
+
 <section class="section">
 <h2 id="sectionTitle">Latest content</h2>
-<div id="catalog" class="grid"><div class="empty">Loading content…</div></div>
+<div id="catalog" class="grid">
+<div class="empty">Loading content…</div>
+</div>
 </section>
 </main>
-<footer>© <span id="year"></span> MDSPly. Content is provided by its respective rights holders.</footer>
 
+<footer>
+© <span id="year"></span> MDSPly. Content is provided by its respective rights holders.
+</footer>
+
+<!-- ADMIN MODAL -->
 <div class="modal" id="adminModal">
 <div class="box">
-<div class="row"><h2>Admin access</h2><button class="secondary" id="adminClose">Close</button></div>
+<div class="row">
+<h2>Admin access</h2>
+<button class="secondary" id="adminClose">Close</button>
+</div>
+
 <div id="loginArea">
 <p class="note">Administrator sign-in</p>
-<div class="field"><label>Admin email</label><input id="adminEmail" type="email" autocomplete="username"></div>
-<div class="field"><label>Admin password</label><input id="adminPassword" type="password" autocomplete="current-password"></div>
-<div class="field"><label>Admin code</label><input id="adminCode" type="password"></div>
+<div class="field">
+<label>Admin email</label>
+<input id="adminEmail" type="email" autocomplete="username">
+</div>
+<div class="field">
+<label>Admin password</label>
+<input id="adminPassword" type="password" autocomplete="current-password">
+</div>
+<div class="field">
+<label>Admin code</label>
+<input id="adminCode" type="password">
+</div>
 <button id="loginBtn">Unlock admin panel</button>
 <p class="note" id="loginMsg"></p>
 </div>
 
 <div id="panelArea" class="hidden">
 <h3>Add content</h3>
-<div class="field"><label>Title</label><input id="itemTitle" placeholder="Movie or channel name"></div>
-<div class="row">
-<div class="field"><label>Category</label>
-<select id="itemCategory"><option>Live TV</option><option>Movie</option><option>Web Series</option></select></div>
-<div class="field"><label>Poster image URL (optional)</label><input id="itemPoster" placeholder="https://..."></div>
+
+<div class="field">
+<label>Title</label>
+<input id="itemTitle" placeholder="Movie or channel name">
 </div>
-<div class="field"><label>Video / Stream / Embed URL</label><input id="itemUrl" placeholder="Paste your authorized URL here" type="url"></div>
-<div class="field"><label>Description (optional)</label><textarea id="itemDescription"></textarea></div>
+
+<div class="row">
+<div class="field">
+<label>Category</label>
+<select id="itemCategory">
+<option>Live TV</option>
+<option>Movie</option>
+<option>Web Series</option>
+</select>
+</div>
+<div class="field">
+<label>Poster image URL (optional)</label>
+<input id="itemPoster" placeholder="https://...">
+</div>
+</div>
+
+<div class="field">
+<label>Video / Stream / Embed URL</label>
+<input id="itemUrl" placeholder="Paste your authorized URL here" type="url">
+</div>
+
+<p class="note">
+Supported: MP4, WebM, M3U8, MPD, YouTube, Vimeo and websites that allow embedding.
+</p>
+
+<div class="field">
+<label>Description (optional)</label>
+<textarea id="itemDescription"></textarea>
+</div>
+
 <button id="saveItem">Save content</button>
 <button id="logoutBtn" class="secondary">Sign out</button>
 <p class="note" id="saveMsg"></p>
+
 <h3>Manage content</h3>
 <div id="adminList" class="adminlist"></div>
 </div>
 </div>
 </div>
 
+<!-- WATCH MODAL -->
 <div class="modal" id="watchModal">
 <div class="box">
-<div class="row"><h2 id="watchTitle">Watch</h2><button class="secondary" id="watchClose">Close</button></div>
+<div class="row">
+<h2 id="watchTitle">Watch</h2>
+<button class="secondary" id="watchClose">Close</button>
+</div>
 <div id="watchFrame" class="player"></div>
 <p class="note" id="watchDescription"></p>
 <p class="note" id="playerMsg"></p>
@@ -108,9 +230,17 @@ footer{border-top:1px solid #ffffff18;padding:22px;text-align:center;color:var(-
 </div>
 
 <script type="module">
-import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-import {getFirestore,collection,addDoc,deleteDoc,doc,onSnapshot,query,orderBy,serverTimestamp} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
-import {getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+import {initializeApp}
+from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+
+import {
+getFirestore,collection,addDoc,deleteDoc,doc,
+onSnapshot,query,orderBy,serverTimestamp
+} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+import {
+getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged
+} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 
 const firebaseConfig={
 apiKey:'AIzaSyCe0R6SSRBiHugFg9TN008tHDL4AoQCbXg',
@@ -125,48 +255,91 @@ measurementId:'G-1BMVS9B5MF'
 const app=initializeApp(firebaseConfig);
 const db=getFirestore(app);
 const auth=getAuth(app);
+
+// Client-side code is only an extra check, not a security boundary.
+// Firestore rules and Firebase Authentication protect admin writes.
 const ADMIN_CODE='Vision';
 
-let items=[],filter='all',isAdmin=false,currentHls=null;
+let items=[];
+let filter='all';
+let isAdmin=false;
+let currentHls=null;
+let currentDash=null;
+
 const $=id=>document.getElementById(id);
 
 function safeUrl(value){
 try{
 const u=new URL(value);
 return ['https:','http:'].includes(u.protocol)?u.href:'';
-}catch{return '';}
+}catch{
+return '';
+}
 }
 
 $('year').textContent=new Date().getFullYear();
 
 function render(){
-const shown=filter==='all'?items:items.filter(x=>x.category===filter);
-$('sectionTitle').textContent=filter==='all'?'Latest content':filter;
+const shown=filter==='all'
+?items
+:items.filter(x=>x.category===filter);
+
+$('sectionTitle').textContent=
+filter==='all'?'Latest content':filter;
+
 $('catalog').innerHTML='';
+
 if(!shown.length){
-$('catalog').innerHTML='<div class="empty">No content added yet.</div>';
+$('catalog').innerHTML=
+'<div class="empty">No content added yet.</div>';
 return;
 }
+
 for(const x of shown){
 const card=document.createElement('article');
 card.className='item';
+
 const poster=safeUrl(x.poster);
-card.innerHTML=`<div class="poster">${poster?`<img src="${poster}" alt="" style="width:100%;height:100%;object-fit:cover">`:'▶'}</div><div class="itembody"><h3></h3><p></p><button>Open</button></div>`;
+
+card.innerHTML=`
+<div class="poster">
+${poster
+?`<img src="${poster}" alt="" style="width:100%;height:100%;object-fit:cover">`
+:'▶'}
+</div>
+<div class="itembody">
+<h3></h3>
+<p></p>
+<button>Open</button>
+</div>`;
+
 card.querySelector('h3').textContent=x.title||'Untitled';
 card.querySelector('p').textContent=x.category||'Content';
 card.querySelector('button').onclick=()=>watch(x);
+
 $('catalog').append(card);
 }
 }
 
 function stopPlayer(){
-if(currentHls){currentHls.destroy();currentHls=null;}
+if(currentHls){
+currentHls.destroy();
+currentHls=null;
+}
+
+if(currentDash){
+currentDash.reset();
+currentDash=null;
+}
+
 $('watchFrame').innerHTML='';
 }
 
 function watch(x){
 stopPlayer();
+
 const url=safeUrl(x.url);
+
 $('watchTitle').textContent=x.title||'Watch';
 $('watchDescription').textContent=x.description||'';
 $('playerMsg').textContent='';
@@ -178,123 +351,199 @@ return;
 }
 
 const isHls=/\.m3u8($|\?)/i.test(url);
+const isDash=/\.mpd($|\?)/i.test(url);
 const isDirect=/\.(mp4|webm|ogg|m4v)($|\?)/i.test(url);
 const isYouTube=/youtube\.com|youtu\.be/i.test(url);
 const isVimeo=/vimeo\.com/i.test(url);
 
 if(isYouTube||isVimeo){
 let embed='';
+
 try{
 const u=new URL(url);
+
 if(isYouTube){
-let id=u.hostname.includes('youtu.be')?u.pathname.slice(1):u.searchParams.get('v')||u.pathname.split('/').pop();
-if(u.pathname.includes('/embed/'))id=u.pathname.split('/embed/')[1].split('/')[0];
+let id=u.hostname.includes('youtu.be')
+?u.pathname.slice(1)
+:u.searchParams.get('v')||u.pathname.split('/').pop();
+
+if(u.pathname.includes('/embed/')){
+id=u.pathname.split('/embed/')[1].split('/')[0];
+}
+
 embed='https://www.youtube.com/embed/'+encodeURIComponent(id);
+
 }else{
 const id=u.pathname.split('/').filter(Boolean).pop();
 embed='https://player.vimeo.com/video/'+encodeURIComponent(id);
 }
+
 }catch{}
-if(!embed){$('playerMsg').textContent='Invalid embed URL.';return;}
+
+if(!embed){
+$('playerMsg').textContent='Invalid embed URL.';
+return;
+}
+
 const frame=document.createElement('iframe');
 frame.src=embed;
-frame.allow='autoplay; fullscreen; picture-in-picture; encrypted-media';
+frame.allow='autoplay; fullscreen; picture-in-picture';
 frame.allowFullscreen=true;
 $('watchFrame').append(frame);
 return;
 }
 
-if(isHls||isDirect){
+if(isHls||isDash||isDirect){
 const video=document.createElement('video');
+
 video.controls=true;
 video.playsInline=true;
 video.preload='metadata';
 video.setAttribute('controlsList','nodownload');
+
 $('watchFrame').append(video);
 
 if(isHls){
+
 if(video.canPlayType('application/vnd.apple.mpegurl')){
 video.src=url;
+
 }else if(window.Hls&&Hls.isSupported()){
 currentHls=new Hls();
 currentHls.loadSource(url);
 currentHls.attachMedia(video);
+
 currentHls.on(Hls.Events.ERROR,(event,data)=>{
 if(data.fatal){
-$('playerMsg').textContent='Stream unavailable. Check URL, expiry, CORS or access permission.';
+$('playerMsg').textContent=
+'Stream unavailable. Check URL, expiry, CORS or access permission.';
 }
 });
+
 }else{
 $('playerMsg').textContent='HLS is not supported in this browser.';
 }
+
+}else if(isDash){
+
+if(window.dashjs){
+currentDash=dashjs.MediaPlayer().create();
+currentDash.initialize(video,url,false);
+
+currentDash.on('error',()=>{
+$('playerMsg').textContent=
+'DASH stream unavailable or blocked.';
+});
+
+}else{
+$('playerMsg').textContent='DASH player could not load.';
+}
+
 }else{
 video.src=url;
 }
-video.onerror=()=>$('playerMsg').textContent='Video unavailable. The link may be expired or blocked.';
+
+video.onerror=()=>{
+$('playerMsg').textContent=
+'Video unavailable. The link may be expired or blocked.';
+};
+
 return;
 }
 
-// Generic authorized embed URL fallback
+// Try embedding other website URLs.
+// Providers may block iframe embedding.
 const frame=document.createElement('iframe');
 frame.src=url;
 frame.allow='autoplay; fullscreen; picture-in-picture';
 frame.allowFullscreen=true;
 frame.referrerPolicy='strict-origin-when-cross-origin';
+
 $('watchFrame').append(frame);
-$('playerMsg').textContent='If the provider blocks embedding, this video cannot play inside MDSPly.';
+
+$('playerMsg').textContent=
+'Website embedding is being attempted. If the provider blocks embedding, playback will not work here.';
 }
 
 function renderAdmin(){
 $('adminList').innerHTML='';
+
 for(const x of items){
 const r=document.createElement('div');
 r.className='adminrow';
+
 const t=document.createElement('span');
 t.textContent=`${x.title||'Untitled'} · ${x.category||''}`;
+
 const b=document.createElement('button');
 b.className='secondary';
 b.textContent='Delete';
+
 b.onclick=async()=>{
 if(confirm('Delete this content?')){
-try{await deleteDoc(doc(db,'content',x.id));}
-catch(e){$('saveMsg').textContent=e.message;}
+try{
+await deleteDoc(doc(db,'content',x.id));
+}catch(e){
+$('saveMsg').textContent=e.message;
+}
 }
 };
+
 r.append(t,b);
 $('adminList').append(r);
 }
 }
 
-onSnapshot(query(collection(db,'content'),orderBy('createdAt','desc')),(snap)=>{
+onSnapshot(
+query(collection(db,'content'),orderBy('createdAt','desc')),
+(snap)=>{
 items=snap.docs.map(d=>({id:d.id,...d.data()}));
 render();
 if(isAdmin)renderAdmin();
-},err=>{
-$('catalog').innerHTML='<div class="empty">Could not load content. Check Firestore rules.</div>';
+},
+(err)=>{
+$('catalog').innerHTML=
+'<div class="empty">Could not load content. Check Firestore rules.</div>';
 console.error(err);
-});
+}
+);
 
-$('adminOpen').onclick=()=>$('adminModal').classList.add('show');
-$('adminClose').onclick=()=>$('adminModal').classList.remove('show');
+$('adminOpen').onclick=()=>
+$('adminModal').classList.add('show');
+
+$('adminClose').onclick=()=>
+$('adminModal').classList.remove('show');
+
 $('watchClose').onclick=()=>{
 $('watchModal').classList.remove('show');
 stopPlayer();
 };
-$('browseBtn').onclick=()=>$('catalog').scrollIntoView({behavior:'smooth'});
+
+$('browseBtn').onclick=()=>
+$('catalog').scrollIntoView({behavior:'smooth'});
 
 document.querySelectorAll('[data-filter]').forEach(b=>{
-b.onclick=()=>{filter=b.dataset.filter;render();};
+b.onclick=()=>{
+filter=b.dataset.filter;
+render();
+};
 });
 
 $('loginBtn').onclick=async()=>{
 const msg=$('loginMsg');
 msg.textContent='';
+
 if($('adminCode').value!==ADMIN_CODE){
 msg.textContent='Incorrect admin code.';
 return;
 }
+
 try{
-await signInWithEmailAndPassword(auth,$('adminEmail').value.trim(),$('adminPassword').value);
+await signInWithEmailAndPassword(
+auth,
+$('adminEmail').value.trim(),
+$('adminPassword').value
+);
 msg.textContent='';
 }catch(e){
 msg.textContent='Admin sign-in failed: '+e.message;
@@ -303,18 +552,22 @@ msg.textContent='Admin sign-in failed: '+e.message;
 
 onAuthStateChanged(auth,user=>{
 isAdmin=!!user;
+
 $('loginArea').classList.toggle('hidden',isAdmin);
 $('panelArea').classList.toggle('hidden',!isAdmin);
+
 if(isAdmin)renderAdmin();
 });
 
 $('saveItem').onclick=async()=>{
 const title=$('itemTitle').value.trim();
 const url=safeUrl($('itemUrl').value.trim());
+
 if(!title||!url){
 $('saveMsg').textContent='Title and a valid URL are required.';
 return;
 }
+
 try{
 await addDoc(collection(db,'content'),{
 title,
@@ -324,14 +577,19 @@ url,
 description:$('itemDescription').value.trim(),
 createdAt:serverTimestamp()
 });
+
 $('saveMsg').textContent='Content saved.';
-['itemTitle','itemPoster','itemUrl','itemDescription'].forEach(id=>$(id).value='');
+
+['itemTitle','itemPoster','itemUrl','itemDescription']
+.forEach(id=>$(id).value='');
+
 }catch(e){
 $('saveMsg').textContent='Could not save: '+e.message;
 }
 };
 
 $('logoutBtn').onclick=()=>signOut(auth);
+
 </script>
 </body>
 </html>
