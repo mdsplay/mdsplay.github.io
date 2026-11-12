@@ -1,67 +1,265 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#090909">
-<title>MDS PLAY — Stream Your World</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#07152f">
+<title>MDSPly | Watch</title>
 <style>
-:root{--red:#e50914;--bg:#090909;--muted:#b8b8b8}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:#fff;font-family:Arial,Helvetica,sans-serif}
-header{height:72px;position:fixed;inset:0 0 auto;z-index:10;display:flex;align-items:center;gap:38px;padding:0 4.5%;background:linear-gradient(#080808ed,#080808a8,transparent);transition:.25s}
-header.scrolled{background:#090909f5;box-shadow:0 4px 20px #0008}
-.brand{font-size:29px;font-weight:900;letter-spacing:-1.5px;color:var(--red);white-space:nowrap}.brand small{font-size:10px;display:block;color:#fff;letter-spacing:4px;margin-top:-3px}
-nav{display:flex;gap:22px;align-items:center}nav a{font-size:14px;color:#eee;text-decoration:none}nav a:hover{color:#aaa}
-.right{margin-left:auto;display:flex;align-items:center;gap:20px}.search{background:#111c;border:1px solid #aaa8;color:white;padding:9px 12px;border-radius:3px;width:180px;outline:none}.profile{width:31px;height:31px;border-radius:4px;background:linear-gradient(135deg,#ed1b2f,#6814a5);display:grid;place-items:center;font-weight:bold}
-.hero{height: min(760px,86vh);min-height:560px;display:flex;align-items:center;padding:100px 5% 80px;position:relative;overflow:hidden;background:radial-gradient(ellipse at 72% 36%,#762d3a 0%,#34131d 23%,transparent 54%),linear-gradient(90deg,#090909 0%,#090909e8 36%,#09090950 70%,#090909 100%),linear-gradient(135deg,#111,#35101c 55%,#080808)}
-.hero:before{content:"";position:absolute;right:9%;top:18%;width:38vw;height:48vw;max-height:520px;max-width:470px;border-radius:48% 48% 12% 12%;background:linear-gradient(145deg,#e6a16b,#7a2336 42%,#130d18 75%);filter:drop-shadow(0 25px 50px #000b);transform:rotate(7deg);opacity:.8;mask-image:linear-gradient(to bottom,#000 70%,transparent)}
-.hero:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#090909 0%,transparent 28%,transparent 75%,#09090955)}
-.hero-content{position:relative;z-index:2;max-width:590px;margin-top:65px}.eyebrow{font-size:13px;letter-spacing:5px;color:#ddd;font-weight:bold}.hero h1{font-size:clamp(48px,7vw,86px);line-height:.95;margin:18px 0 15px;letter-spacing:-3px;text-shadow:0 4px 20px #0008}.hero p{font-size:17px;line-height:1.55;color:#e0e0e0;max-width:520px;text-shadow:0 2px 10px #000}
-.meta{display:flex;gap:12px;align-items:center;color:#ddd;font-size:13px;margin:18px 0}.top10{color:#fff;font-weight:bold}.top10 b{background:var(--red);padding:4px 7px;border-radius:3px;margin-right:6px}
-.actions{display:flex;gap:12px;margin-top:25px}.btn{border:0;border-radius:4px;padding:12px 23px;font-size:16px;font-weight:bold;cursor:pointer}.btn-light{background:#fff;color:#111}.btn-dark{background:#555b;color:#fff}.btn:hover{filter:brightness(.85)}
-main{margin-top:-65px;position:relative;z-index:3}.shelf{padding:0 4.5%;margin:0 0 34px}.shelf h2{font-size:21px;margin:0 0 14px}.cards{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 16px;scrollbar-width:thin;scrollbar-color:#555 transparent}.card{flex:0 0 190px;height:270px;border-radius:5px;position:relative;overflow:hidden;cursor:pointer;transition:transform .22s,box-shadow .22s;background:#222}.card:hover{transform:scale(1.07);z-index:2;box-shadow:0 10px 28px #000b}.art{position:absolute;inset:0;display:flex;align-items:end;padding:15px;background:linear-gradient(0deg,#000e,transparent 60%),var(--art)}.art:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 70% 22%,#ffffff35,transparent 35%),linear-gradient(145deg,transparent 30%,#0005)}.poster-title{position:relative;font-weight:900;font-size:23px;line-height:.95;text-transform:uppercase;letter-spacing:-.8px;text-shadow:0 3px 9px #000}.poster-title small{display:block;font-size:9px;letter-spacing:3px;margin-bottom:8px;color:#ddd}
-.rank{position:absolute;top:9px;left:9px;background:var(--red);font-size:9px;font-weight:bold;padding:5px 7px;border-radius:2px;z-index:1}
-.card:nth-child(1) .art{--art:linear-gradient(135deg,#8e2431,#f29b58 42%,#21142c)}.card:nth-child(2) .art{--art:linear-gradient(145deg,#102b4c,#3f87a5 50%,#10131d)}.card:nth-child(3) .art{--art:linear-gradient(145deg,#171717,#8b6a3d 55%,#261314)}.card:nth-child(4) .art{--art:linear-gradient(145deg,#25104b,#9c3d75 55%,#f19a58)}.card:nth-child(5) .art{--art:linear-gradient(145deg,#193a35,#72a58b 48%,#111)}.card:nth-child(6) .art{--art:linear-gradient(145deg,#381b1b,#ba343d 50%,#16131a)}.card:nth-child(7) .art{--art:linear-gradient(145deg,#162e59,#7a9bd0 50%,#1a1624)}.card:nth-child(8) .art{--art:linear-gradient(145deg,#4b2c17,#c58d45 50%,#21130c)}
-.card:nth-child(2n) .poster-title{font-size:19px}
-footer{border-top:1px solid #252525;margin-top:55px;padding:30px 5%;color:#777;font-size:12px;display:flex;justify-content:space-between}
-.modal{display:none;position:fixed;inset:0;background:#000c;z-index:20;align-items:center;justify-content:center;padding:20px}.modal.show{display:flex}.dialog{max-width:540px;width:100%;background:#181818;border-radius:8px;overflow:hidden;box-shadow:0 20px 80px #000}.dialog-art{height:220px;background:linear-gradient(120deg,#711c32,#df8758,#15152b);display:flex;align-items:end;padding:22px;font-size:32px;font-weight:900}.dialog-body{padding:22px}.dialog-body p{color:#bbb;line-height:1.5}.close{float:right;background:none;border:0;color:#fff;font-size:25px;cursor:pointer}
-@media(max-width:760px){header{height:62px;padding:0 4%;gap:15px}.brand{font-size:23px}nav{gap:12px}nav a{font-size:11px}.right{gap:8px}.search{width:100px;padding:7px}.hero{min-height:570px;height:78vh;padding:90px 5% 60px}.hero:before{right:-5%;top:23%;width:68vw;height:78vw;opacity:.48}.hero-content{margin-top:80px}.hero h1{font-size:53px}.hero p{font-size:14px}.shelf{padding:0 4%}.card{flex-basis:145px;height:215px}.shelf h2{font-size:18px}.actions .btn{font-size:14px;padding:11px 16px}}
-@media(max-width:430px){nav a:nth-child(3){display:none}.search{width:82px}.hero h1{font-size:46px}}
+:root{--bg:#07152f;--panel:#102448;--blue:#377dff;--text:#f5f8ff;--muted:#a9b8d3}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 80% -10%,#173c78,transparent 35%),var(--bg);color:var(--text);font:15px system-ui,Arial}
+header{position:sticky;top:0;z-index:5;background:#07152fee;backdrop-filter:blur(14px);border-bottom:1px solid #ffffff18;padding:14px max(18px,calc((100% - 1120px)/2));display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{font-size:25px;font-weight:900;letter-spacing:-1px}.brand span{color:#65a0ff}
+.nav{display:flex;gap:8px;flex-wrap:wrap}
+button{border:0;border-radius:12px;padding:10px 15px;background:var(--blue);color:white;font-weight:700;cursor:pointer}
+.secondary{background:#ffffff14;border:1px solid #ffffff25}
+.wrap{max-width:1120px;margin:auto;padding:24px 18px 70px}
+.hero{padding:36px 26px;border:1px solid #ffffff20;border-radius:24px;background:linear-gradient(120deg,#153b76,#0c2144 65%,#0b1a34);box-shadow:0 20px 60px #0005}
+.eyebrow{color:#8db7ff;font-weight:800;text-transform:uppercase;letter-spacing:2px;font-size:11px}
+.hero h1{font-size:clamp(32px,6vw,54px);line-height:1.02;margin:12px 0}
+.hero p{color:#c2d0e8;max-width:560px;line-height:1.6}
+.section{margin-top:32px}.section h2{font-size:22px;margin:0 0 14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:14px}
+.item{background:linear-gradient(150deg,#142d54,#0d1e3b);border:1px solid #ffffff17;border-radius:17px;overflow:hidden}
+.poster{aspect-ratio:16/10;background:linear-gradient(135deg,#1e4b8b,#101c36);display:grid;place-items:center;color:#b8d0ff;font-size:35px}
+.itembody{padding:13px}.item h3{margin:0 0 6px;font-size:16px}.item p{margin:0 0 12px;color:var(--muted);font-size:12px}
+.empty{padding:20px;border:1px dashed #ffffff35;border-radius:14px;color:var(--muted)}
+footer{border-top:1px solid #ffffff18;padding:22px;text-align:center;color:var(--muted);font-size:12px}
+.modal{position:fixed;inset:0;background:#000b;display:none;place-items:center;padding:16px;z-index:10}
+.modal.show{display:grid}.box{width:min(100%,480px);max-height:90vh;overflow:auto;background:#0d2040;border:1px solid #ffffff2b;border-radius:18px;padding:20px}
+.box h2{margin-top:0}.field{display:grid;gap:6px;margin:12px 0}.field label{color:#c4d2e9;font-size:13px}
+.field input,.field select,.field textarea{width:100%;padding:12px;border:1px solid #ffffff30;border-radius:10px;background:#07152f;color:white;font:inherit}
+.field textarea{min-height:75px}.row{display:flex;gap:9px;flex-wrap:wrap}.row>*{flex:1}
+.hidden{display:none!important}.player{width:100%;aspect-ratio:16/9;background:#000;border:1px solid #ffffff22;border-radius:14px;margin:10px 0}
+.player iframe{width:100%;height:100%;border:0;border-radius:14px}
+.note{font-size:12px;color:var(--muted);line-height:1.5}.adminlist{display:grid;gap:8px}
+.adminrow{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#ffffff0d;padding:10px;border-radius:10px}
 </style>
 </head>
 <body>
-<header id="header"><div class="brand">MDS PLAY<small>STREAM YOUR WORLD</small></div><nav><a href="#home">Home</a><a href="#live">Live TV</a><a href="#movies">Movies</a><a href="#series">Web Series</a></nav><div class="right"><input id="search" class="search" placeholder="Search titles..." aria-label="Search titles"><div class="profile">M</div></div></header>
-<section class="hero" id="home"><div class="hero-content"><div class="eyebrow">MDS PLAY ORIGINAL EXPERIENCE</div><h1>YOUR NEXT<br>BIG WATCH.</h1><div class="meta"><span>2026</span><span>•</span><span>Drama · Thriller</span><span>•</span><span>HD</span></div><p>Stories that pull you in. Discover live television, movies and web series — all in one place.</p><div class="actions"><button class="btn btn-light" onclick="showInfo('Featured on MDS PLAY')">▶ &nbsp; Play</button><button class="btn btn-dark" onclick="showInfo('Featured on MDS PLAY')">ⓘ &nbsp; More Info</button></div></div></section>
-<main>
-<section class="shelf" id="live"><h2>📡 &nbsp; Live TV</h2><div class="cards">
-<div class="card" data-title="News Live"><div class="rank">LIVE</div><div class="art"><div class="poster-title"><small>MDS PLAY CHANNEL</small>NEWS<br>LIVE</div></div></div>
-<div class="card" data-title="Entertainment"><div class="rank">LIVE</div><div class="art"><div class="poster-title"><small>NOW ON</small>ENTERTAIN<br>MENT</div></div></div>
-<div class="card" data-title="Music Live"><div class="rank">LIVE</div><div class="art"><div class="poster-title"><small>24/7</small>MUSIC<br>LIVE</div></div></div>
-<div class="card" data-title="Kids Zone"><div class="rank">LIVE</div><div class="art"><div class="poster-title"><small>FAMILY</small>KIDS<br>ZONE</div></div></div>
-<div class="card" data-title="Sports Live"><div class="rank">LIVE</div><div class="art"><div class="poster-title"><small>SPORTS</small>GAME<br>ON</div></div></div>
-</div></section>
-<section class="shelf" id="movies"><h2>🎬 &nbsp; Movies to Explore</h2><div class="cards">
-<div class="card" data-title="The Last Horizon"><div class="art"><div class="poster-title"><small>A MDS PLAY PICK</small>THE LAST<br>HORIZON</div></div></div>
-<div class="card" data-title="Deep Blue"><div class="art"><div class="poster-title"><small>EDGE OF THE UNKNOWN</small>DEEP<br>BLUE</div></div></div>
-<div class="card" data-title="The Witness"><div class="art"><div class="poster-title"><small>EVERY SECRET HAS A COST</small>THE<br>WITNESS</div></div></div>
-<div class="card" data-title="Red Moon"><div class="art"><div class="poster-title"><small>ONE NIGHT CHANGES ALL</small>RED<br>MOON</div></div></div>
-<div class="card" data-title="Wild Earth"><div class="art"><div class="poster-title"><small>BEYOND THE MAP</small>WILD<br>EARTH</div></div></div>
-<div class="card" data-title="Final Hour"><div class="art"><div class="poster-title"><small>TIME IS RUNNING OUT</small>FINAL<br>HOUR</div></div></div>
-</div></section>
-<section class="shelf" id="series"><h2>📺 &nbsp; Binge-worthy Web Series</h2><div class="cards">
-<div class="card" data-title="Shadow Code"><div class="art"><div class="poster-title"><small>SEASON 1</small>SHADOW<br>CODE</div></div></div>
-<div class="card" data-title="City of Secrets"><div class="art"><div class="poster-title"><small>NEW SERIES</small>CITY OF<br>SECRETS</div></div></div>
-<div class="card" data-title="The Divide"><div class="art"><div class="poster-title"><small>ALL EPISODES</small>THE<br>DIVIDE</div></div></div>
-<div class="card" data-title="Unknown"><div class="art"><div class="poster-title"><small>NO ONE IS SAFE</small>UN<br>KNOWN</div></div></div>
-<div class="card" data-title="Beyond"><div class="art"><div class="poster-title"><small>GO BEYOND</small>BEYOND</div></div></div>
-</div></section>
+<header>
+<div class="brand">MDS<span>Ply</span></div>
+<nav class="nav">
+<button class="secondary" data-filter="all">Home</button>
+<button class="secondary" data-filter="Live TV">Live TV</button>
+<button class="secondary" data-filter="Movie">Movies</button>
+<button class="secondary" data-filter="Web Series">Web Series</button>
+</nav>
+<button id="adminOpen" class="secondary">Admin</button>
+</header>
+
+<main class="wrap">
+<section class="hero">
+<div class="eyebrow">Your entertainment space</div>
+<h1>Watch what you love.</h1>
+<p>Explore Live TV, Movies and Web Series in one place. MDSPly lists content added by its administrator.</p>
+<button id="browseBtn">Explore content</button>
+</section>
+<section class="section">
+<h2 id="sectionTitle">Latest content</h2>
+<div id="catalog" class="grid"><div class="empty">Loading content…</div></div>
+</section>
 </main>
-<footer><span>© 2026 MDS PLAY</span><span>Stream your world.</span></footer>
-<div class="modal" id="modal" onclick="if(event.target===this)closeInfo()"><div class="dialog"><div class="dialog-art">MDS PLAY <button class="close" onclick="closeInfo()">×</button></div><div class="dialog-body"><h2 id="modalTitle">MDS PLAY</h2><p>This is a visual website preview. Connect only official channels, licensed streams, or videos you have permission to distribute to enable playback.</p><button class="btn btn-light" onclick="closeInfo()">Got it</button></div></div></div>
-<script>
-const header=document.getElementById('header');window.addEventListener('scroll',()=>header.classList.toggle('scrolled',scrollY>30));
-function showInfo(title){document.getElementById('modalTitle').textContent=title;document.getElementById('modal').classList.add('show')}
-function closeInfo(){document.getElementById('modal').classList.remove('show')}
-document.querySelectorAll('.card').forEach(card=>card.addEventListener('click',()=>showInfo(card.dataset.title)));
-document.getElementById('search').addEventListener('input',e=>{let q=e.target.value.toLowerCase();document.querySelectorAll('.card').forEach(c=>c.style.display=c.dataset.title.toLowerCase().includes(q)?'block':'none')});
+
+<footer>© <span id="year"></span> MDSPly. Content is provided by its respective rights holders.</footer>
+
+<div class="modal" id="adminModal">
+<div class="box">
+<div class="row"><h2>Admin access</h2><button class="secondary" id="adminClose">Close</button></div>
+<div id="loginArea">
+<p class="note">Public visitors do not need an account. Admin access uses the administrator account created in Firebase Authentication.</p>
+<div class="field"><label>Admin email</label><input id="adminEmail" type="email" autocomplete="username" placeholder="Your admin email"></div>
+<div class="field"><label>Admin password</label><input id="adminPassword" type="password" autocomplete="current-password" placeholder="Firebase admin password"></div>
+<div class="field"><label>Admin code</label><input id="adminCode" type="password" placeholder="Your private code"></div>
+<button id="loginBtn">Unlock admin panel</button>
+<p class="note" id="loginMsg"></p>
+</div>
+<div id="panelArea" class="hidden">
+<h3>Add content</h3>
+<div class="field"><label>Title</label><input id="itemTitle" placeholder="Example: News Channel"></div>
+<div class="row">
+<div class="field"><label>Category</label><select id="itemCategory"><option>Live TV</option><option>Movie</option><option>Web Series</option></select></div>
+<div class="field"><label>Poster image URL (optional)</label><input id="itemPoster" placeholder="https://..."></div>
+</div>
+<div class="field"><label>Authorized video / embed URL</label><input id="itemUrl" placeholder="https://..." type="url"></div>
+<div class="field"><label>Description (optional)</label><textarea id="itemDescription"></textarea></div>
+<button id="saveItem">Save content</button>
+<button id="logoutBtn" class="secondary">Sign out</button>
+<p class="note" id="saveMsg"></p>
+<h3>Manage content</h3><div id="adminList" class="adminlist"></div>
+</div>
+</div>
+</div>
+
+<div class="modal" id="watchModal">
+<div class="box">
+<div class="row"><h2 id="watchTitle">Watch</h2><button class="secondary" id="watchClose">Close</button></div>
+<div id="watchFrame" class="player"></div>
+<p class="note" id="watchDescription"></p>
+</div>
+</div>
+
+<script type="module">
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import {getFirestore,collection,addDoc,deleteDoc,doc,onSnapshot,query,orderBy,serverTimestamp} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import {getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+
+const firebaseConfig={
+apiKey:'AIzaSyCe0R6SSRBiHugFg9TN008tHDL4AoQCbXg',
+authDomain:'mds-play-2f680.firebaseapp.com',
+projectId:'mds-play-2f680',
+storageBucket:'mds-play-2f680.firebasestorage.app',
+messagingSenderId:'713735739792',
+appId:'1:713735739792:web:13b069bc956271bf9ffb15',
+measurementId:'G-1BMVS9B5MF'
+};
+
+const app=initializeApp(firebaseConfig);
+const db=getFirestore(app);
+const auth=getAuth(app);
+
+// This is only an extra interface check, NOT database security.
+const ADMIN_CODE='Vision';
+
+let items=[],filter='all',isAdmin=false;
+const $=id=>document.getElementById(id);
+
+function safeUrl(value){
+try{
+const u=new URL(value);
+return ['https:','http:'].includes(u.protocol)?u.href:'';
+}catch{return '';}
+}
+
+$('year').textContent=new Date().getFullYear();
+
+function render(){
+const shown=filter==='all'?items:items.filter(x=>x.category===filter);
+$('sectionTitle').textContent=filter==='all'?'Latest content':filter;
+$('catalog').innerHTML='';
+if(!shown.length){
+$('catalog').innerHTML='<div class="empty">No content added yet. Please check again later.</div>';
+return;
+}
+for(const x of shown){
+const card=document.createElement('article');
+card.className='item';
+const poster=safeUrl(x.poster);
+card.innerHTML=`<div class="poster">${poster?`<img src="${poster}" alt="" style="width:100%;height:100%;object-fit:cover">`:'▶'}</div><div class="itembody"><h3></h3><p></p><button>Open</button></div>`;
+card.querySelector('h3').textContent=x.title||'Untitled';
+card.querySelector('p').textContent=x.category||'Content';
+card.querySelector('button').onclick=()=>watch(x);
+$('catalog').append(card);
+}
+}
+
+function watch(x){
+const url=safeUrl(x.url);
+$('watchTitle').textContent=x.title||'Watch';
+$('watchDescription').textContent=x.description||'';
+$('watchFrame').innerHTML='';
+if(url){
+const frame=document.createElement('iframe');
+frame.src=url;
+frame.allow='autoplay; fullscreen; picture-in-picture';
+frame.allowFullscreen=true;
+frame.referrerPolicy='no-referrer';
+$('watchFrame').append(frame);
+}else{
+$('watchFrame').textContent='No valid video URL is available.';
+}
+$('watchModal').classList.add('show');
+}
+
+function renderAdmin(){
+$('adminList').innerHTML='';
+for(const x of items){
+const r=document.createElement('div');
+r.className='adminrow';
+const t=document.createElement('span');
+t.textContent=`${x.title||'Untitled'} · ${x.category||''}`;
+const b=document.createElement('button');
+b.className='secondary';
+b.textContent='Delete';
+b.onclick=async()=>{
+if(confirm('Delete this content?')){
+try{await deleteDoc(doc(db,'content',x.id));}
+catch(e){$('saveMsg').textContent=e.message;}
+}
+};
+r.append(t,b);
+$('adminList').append(r);
+}
+}
+
+onSnapshot(query(collection(db,'content'),orderBy('createdAt','desc')),(snap)=>{
+items=snap.docs.map(d=>({id:d.id,...d.data()}));
+render();
+if(isAdmin)renderAdmin();
+},err=>{
+$('catalog').innerHTML='<div class="empty">Could not load content. Check Firestore security rules.</div>';
+console.error(err);
+});
+
+$('adminOpen').onclick=()=>$('adminModal').classList.add('show');
+$('adminClose').onclick=()=>$('adminModal').classList.remove('show');
+$('watchClose').onclick=()=>{
+$('watchModal').classList.remove('show');
+$('watchFrame').innerHTML='';
+};
+$('browseBtn').onclick=()=>$('catalog').scrollIntoView({behavior:'smooth'});
+
+document.querySelectorAll('[data-filter]').forEach(b=>{
+b.onclick=()=>{filter=b.dataset.filter;render();};
+});
+
+$('loginBtn').onclick=async()=>{
+const msg=$('loginMsg');
+msg.textContent='';
+if($('adminCode').value!==ADMIN_CODE){
+msg.textContent='Incorrect admin code.';
+return;
+}
+try{
+await signInWithEmailAndPassword(auth,$('adminEmail').value.trim(),$('adminPassword').value);
+msg.textContent='';
+}catch(e){
+msg.textContent='Admin sign-in failed: '+e.message;
+}
+};
+
+onAuthStateChanged(auth,user=>{
+isAdmin=!!user;
+$('loginArea').classList.toggle('hidden',isAdmin);
+$('panelArea').classList.toggle('hidden',!isAdmin);
+if(isAdmin)renderAdmin();
+});
+
+$('saveItem').onclick=async()=>{
+const title=$('itemTitle').value.trim();
+const url=safeUrl($('itemUrl').value.trim());
+if(!title||!url){
+$('saveMsg').textContent='Title and a valid video/embed URL are required.';
+return;
+}
+try{
+await addDoc(collection(db,'content'),{
+title,
+category:$('itemCategory').value,
+poster:safeUrl($('itemPoster').value.trim()),
+url,
+description:$('itemDescription').value.trim(),
+createdAt:serverTimestamp()
+});
+$('saveMsg').textContent='Content saved.';
+['itemTitle','itemPoster','itemUrl','itemDescription'].forEach(id=>$(id).value='');
+}catch(e){
+$('saveMsg').textContent='Could not save: '+e.message;
+}
+};
+
+$('logoutBtn').onclick=()=>signOut(auth);
 </script>
-</body></html>
+</body>
+</html>
