@@ -4,264 +4,204 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#07152f">
-<title>MDSPly | Watch</title>
-
+<meta name="theme-color" content="#080808">
+<title>MDSPLAY | Stream Anything</title>
 <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17"></script>
 <script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
-
 <style>
-:root{
---bg:#07152f;
---blue:#377dff;
---text:#f5f8ff;
---muted:#a9b8d3
-}
+:root{--bg:#080808;--red:#e50914;--text:#fff;--muted:#b3b3b3}
 *{box-sizing:border-box}
-body{
-margin:0;
-background:radial-gradient(circle at 80% -10%,#173c78,transparent 35%),var(--bg);
-color:var(--text);
-font:15px system-ui,Arial
-}
-header{
-position:sticky;top:0;z-index:5;
-background:#07152fee;
-backdrop-filter:blur(14px);
-border-bottom:1px solid #ffffff18;
-padding:14px max(18px,calc((100% - 1120px)/2));
-display:flex;align-items:center;justify-content:space-between;
-gap:12px;flex-wrap:wrap
-}
-.brand{font-size:25px;font-weight:900;letter-spacing:-1px}
-.brand span{color:#65a0ff}
-.nav{display:flex;gap:8px;flex-wrap:wrap}
-button{
-border:0;border-radius:12px;padding:10px 15px;
-background:var(--blue);color:white;font-weight:700;cursor:pointer
-}
-.secondary{background:#ffffff14;border:1px solid #ffffff25}
-.wrap{max-width:1120px;margin:auto;padding:24px 18px 70px}
-.hero{
-padding:36px 26px;border:1px solid #ffffff20;border-radius:24px;
-background:linear-gradient(120deg,#153b76,#0c2144 65%,#0b1a34);
-box-shadow:0 20px 60px #0005
-}
-.eyebrow{
-color:#8db7ff;font-weight:800;text-transform:uppercase;
-letter-spacing:2px;font-size:11px
-}
-.hero h1{font-size:clamp(32px,6vw,54px);line-height:1.02;margin:12px 0}
-.hero p{color:#c2d0e8;max-width:560px;line-height:1.6}
-.section{margin-top:32px}
-.section h2{font-size:22px;margin:0 0 14px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:14px}
-.item{
-background:linear-gradient(150deg,#142d54,#0d1e3b);
-border:1px solid #ffffff17;border-radius:17px;overflow:hidden
-}
-.poster{
-aspect-ratio:16/10;background:linear-gradient(135deg,#1e4b8b,#101c36);
-display:grid;place-items:center;color:#b8d0ff;font-size:35px
-}
-.itembody{padding:13px}
-.item h3{margin:0 0 6px;font-size:16px}
-.item p{margin:0 0 12px;color:var(--muted);font-size:12px}
-.empty{padding:20px;border:1px dashed #ffffff35;border-radius:14px;color:var(--muted)}
-footer{
-border-top:1px solid #ffffff18;padding:22px;text-align:center;
-color:var(--muted);font-size:12px
-}
-.modal{
-position:fixed;inset:0;background:#000b;display:none;
-place-items:center;padding:16px;z-index:10
-}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 Arial,system-ui,sans-serif}
+button,input,select,textarea{font:inherit}
+button{border:0;border-radius:5px;padding:10px 17px;background:#fff;color:#111;font-weight:700;cursor:pointer}
+button:hover{filter:brightness(.88)}
+.secondary{background:#333;color:#fff}
+.red{background:var(--red);color:#fff}
+header{height:68px;position:sticky;top:0;z-index:8;display:flex;align-items:center;gap:28px;padding:0 4.5%;background:linear-gradient(180deg,#050505 0%,rgba(5,5,5,.94) 72%,rgba(5,5,5,.72) 100%)}
+.brand{font-size:29px;letter-spacing:-1.5px;font-weight:900;color:var(--red);white-space:nowrap}
+.brand span{color:#fff}
+.nav{display:flex;align-items:center;gap:20px;flex:1;flex-wrap:wrap}
+.nav button{padding:5px 0;background:transparent;color:#e5e5e5;font-weight:500}
+.nav button.active,.nav button:hover{color:#fff;font-weight:800}
+.header-actions{display:flex;align-items:center;gap:10px}
+.search{width:min(190px,26vw);background:#111;border:1px solid #555;color:#fff;padding:9px 11px;border-radius:4px}
+.hero{min-height:440px;position:relative;display:flex;align-items:center;padding:55px 5% 80px;background:linear-gradient(90deg,#080808 0%,rgba(8,8,8,.88) 28%,rgba(8,8,8,.28) 70%,rgba(8,8,8,.15)),linear-gradient(0deg,#080808 0%,transparent 45%),radial-gradient(ellipse at 72% 35%,#6d1720 0%,#2a1118 27%,#111 62%)}
+.hero-content{max-width:590px;position:relative;z-index:1}
+.kicker{color:#ddd;text-transform:uppercase;font-size:12px;font-weight:800;letter-spacing:3px}
+.hero h1{font-size:clamp(38px,6vw,68px);line-height:.98;margin:13px 0 16px;letter-spacing:-2px}
+.hero p{color:#eee;max-width:510px;font-size:17px;line-height:1.55;margin:0 0 22px}
+.hero-buttons{display:flex;gap:10px;flex-wrap:wrap}
+.hero-buttons button{font-size:16px;padding:12px 22px}
+.hero-buttons .more{background:#6d6d6eb8;color:#fff}
+main{margin-top:-42px;position:relative;z-index:2;padding-bottom:50px}
+.section{margin:0 0 30px;padding:0 4.5%}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.section h2{font-size:21px;margin:0;font-weight:800}
+.shelf{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(145px,16.5%);gap:10px;overflow-x:auto;padding:4px 2px 14px;scrollbar-width:thin;scrollbar-color:#555 transparent}
+.card{position:relative;min-width:0;border-radius:5px;overflow:hidden;background:#202020;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease}
+.card:hover{transform:scale(1.045);z-index:2;box-shadow:0 10px 25px #000b}
+.poster{width:100%;aspect-ratio:2/3;display:grid;place-items:center;background:linear-gradient(145deg,#353535,#111);color:#aaa;font-size:38px;overflow:hidden}
+.poster img{width:100%;height:100%;object-fit:cover;display:block}
+.card-info{padding:9px 10px 11px}
+.card-info h3{font-size:14px;margin:0 0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-info p{font-size:11px;color:var(--muted);margin:0}
+.card-open{margin-top:8px;width:100%;padding:7px;background:#333;color:white;font-size:12px}
+.empty{padding:20px;color:var(--muted);border:1px solid #333;border-radius:5px}
+.live-shelf{grid-auto-columns:minmax(180px,22%)}
+.live-card .poster{aspect-ratio:16/9;background:linear-gradient(135deg,#292929,#111);font-size:32px}
+.live-card .poster img{object-fit:contain;padding:20px;background:#151515}
+footer{border-top:1px solid #292929;padding:25px 5%;color:#777;font-size:12px;text-align:center}
+.modal{position:fixed;inset:0;background:#000d;display:none;place-items:center;padding:15px;z-index:20}
 .modal.show{display:grid}
-.box{
-width:min(100%,650px);max-height:90vh;overflow:auto;
-background:#0d2040;border:1px solid #ffffff2b;
-border-radius:18px;padding:20px
-}
-.box h2{margin-top:0}
+.box{width:min(100%,680px);max-height:92vh;overflow:auto;background:#181818;border:1px solid #444;border-radius:8px;padding:22px;box-shadow:0 20px 70px #000}
+.box h2{margin:0 0 14px}
+.box-top{display:flex;justify-content:space-between;align-items:center;gap:12px}
 .field{display:grid;gap:6px;margin:12px 0}
-.field label{color:#c4d2e9;font-size:13px}
-.field input,.field select,.field textarea{
-width:100%;padding:12px;border:1px solid #ffffff30;
-border-radius:10px;background:#07152f;color:white;font:inherit
-}
+.field label{font-size:13px;color:#ddd}
+.field input,.field select,.field textarea{width:100%;padding:12px;border:1px solid #555;border-radius:4px;background:#111;color:#fff}
 .field textarea{min-height:75px}
-.row{display:flex;gap:9px;flex-wrap:wrap}
+.row{display:flex;gap:10px;flex-wrap:wrap}
 .row>*{flex:1;min-width:0}
 .hidden{display:none!important}
-.player{
-width:100%;aspect-ratio:16/9;background:#000;
-border:1px solid #ffffff22;border-radius:14px;
-margin:10px 0;overflow:hidden
-}
-.player video,.player iframe{
-width:100%;height:100%;border:0;object-fit:contain;background:#000
-}
-.note{font-size:12px;color:var(--muted);line-height:1.5}
+.player{width:100%;aspect-ratio:16/9;background:#000;margin:12px 0;border-radius:5px;overflow:hidden}
+.player video,.player iframe{width:100%;height:100%;border:0;object-fit:contain;background:#000}
+.note{font-size:12px;color:#aaa;line-height:1.5}
 .adminlist{display:grid;gap:8px}
-.adminrow{
-display:flex;align-items:center;justify-content:space-between;
-gap:10px;background:#ffffff0d;padding:10px;border-radius:10px
+.adminrow{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#252525;padding:10px;border-radius:4px}
+.adminrow span{overflow-wrap:anywhere}
+@media(max-width:760px){
+ header{height:auto;min-height:62px;padding:12px 4%;gap:10px;flex-wrap:wrap}
+ .brand{font-size:25px}
+ .nav{order:3;width:100%;gap:17px;overflow-x:auto;flex-wrap:nowrap}
+ .nav button{white-space:nowrap;font-size:13px}
+ .header-actions{margin-left:auto}
+ .search{width:110px}
+ .hero{min-height:390px;padding:42px 5% 75px;background:linear-gradient(90deg,#080808 0%,rgba(8,8,8,.82) 48%,rgba(8,8,8,.35)),linear-gradient(0deg,#080808 0%,transparent 55%),radial-gradient(ellipse at 78% 35%,#6d1720,#191014 55%,#111)}
+ .hero p{font-size:14px}
+ .shelf{grid-auto-columns:minmax(125px,38%)}
+ .live-shelf{grid-auto-columns:minmax(155px,48%)}
+ .section h2{font-size:18px}
+ main{margin-top:-30px}
 }
 </style>
 </head>
-
 <body>
-
 <header>
-<div class="brand">MDS<span>Ply</span></div>
-<nav class="nav">
-<button class="secondary" data-filter="all">Home</button>
-<button class="secondary" data-filter="Live TV">Live TV</button>
-<button class="secondary" data-filter="Movie">Movies</button>
-<button class="secondary" data-filter="Web Series">Web Series</button>
-</nav>
-<button id="adminOpen" class="secondary">Admin</button>
+ <div class="brand">MDSPLAY</div>
+ <nav class="nav">
+  <button class="active" data-filter="all">Home</button>
+  <button data-filter="Movie">Movies</button>
+  <button data-filter="Web Series">TV Shows</button>
+  <button data-filter="Live TV">Live TV</button>
+ </nav>
+ <div class="header-actions">
+  <input class="search" id="searchInput" type="search" placeholder="Search">
+  <button id="adminOpen" class="secondary">Admin</button>
+ </div>
 </header>
 
-<main class="wrap">
 <section class="hero">
-<div class="eyebrow">Your entertainment space</div>
-<h1>Watch what you love.</h1>
-<p>Explore Live TV, Movies and Web Series in one place.</p>
-<button id="browseBtn">Explore content</button>
+ <div class="hero-content">
+  <div class="kicker">MDSPLAY Original Experience</div>
+  <h1 id="heroTitle">Stories worth staying in for.</h1>
+  <p id="heroDescription">Discover movies, series and live channels—all in one place.</p>
+  <div class="hero-buttons">
+   <button class="red" id="browseBtn">▶ Explore</button>
+   <button class="more" id="heroLiveBtn">▣ Live TV</button>
+  </div>
+ </div>
 </section>
 
-<section class="section">
-<h2 id="sectionTitle">Latest content</h2>
-<div id="catalog" class="grid">
-<div class="empty">Loading content…</div>
-</div>
-</section>
+<main>
+ <section class="section" id="liveSection">
+  <div class="section-head"><h2>Live TV Channels</h2></div>
+  <div id="liveCatalog" class="shelf live-shelf"><div class="empty">Loading channels…</div></div>
+ </section>
+ <section class="section" id="movieSection">
+  <div class="section-head"><h2>Movies</h2></div>
+  <div id="movieCatalog" class="shelf"><div class="empty">Loading movies…</div></div>
+ </section>
+ <section class="section" id="seriesSection">
+  <div class="section-head"><h2>Web Series & Shows</h2></div>
+  <div id="seriesCatalog" class="shelf"><div class="empty">Loading shows…</div></div>
+ </section>
+ <section class="section" id="allSection">
+  <div class="section-head"><h2>Explore All</h2></div>
+  <div id="allCatalog" class="shelf"><div class="empty">Loading content…</div></div>
+ </section>
 </main>
 
-<footer>
-© <span id="year"></span> MDSPly. Content is provided by its respective rights holders.
-</footer>
+<footer>© <span id="year"></span> MDSPLAY. Content is provided by its respective rights holders.</footer>
 
-<!-- ADMIN MODAL -->
 <div class="modal" id="adminModal">
-<div class="box">
-<div class="row">
-<h2>Admin access</h2>
-<button class="secondary" id="adminClose">Close</button>
+ <div class="box">
+  <div class="box-top"><h2>Admin access</h2><button class="secondary" id="adminClose">Close</button></div>
+  <div id="loginArea">
+   <p class="note">Administrator sign-in</p>
+   <div class="field"><label>Admin email</label><input id="adminEmail" type="email" autocomplete="username"></div>
+   <div class="field"><label>Admin password</label><input id="adminPassword" type="password" autocomplete="current-password"></div>
+   <div class="field"><label>Admin code</label><input id="adminCode" type="password"></div>
+   <button class="red" id="loginBtn">Unlock admin panel</button>
+   <p class="note" id="loginMsg"></p>
+  </div>
+
+  <div id="panelArea" class="hidden">
+   <h3>Add content</h3>
+   <div class="field"><label>Title</label><input id="itemTitle" placeholder="Movie or channel name"></div>
+   <div class="row">
+    <div class="field"><label>Category</label><select id="itemCategory"><option>Live TV</option><option>Movie</option><option>Web Series</option></select></div>
+    <div class="field"><label>Poster / channel logo URL</label><input id="itemPoster" placeholder="https://..."></div>
+   </div>
+   <div class="field"><label>Video / Stream / Embed URL</label><input id="itemUrl" placeholder="Paste an authorized URL" type="url"></div>
+   <p class="note">Supported: MP4, WebM, M3U8, MPD, YouTube, Vimeo and websites that permit embedding.</p>
+   <div class="field"><label>Description</label><textarea id="itemDescription"></textarea></div>
+   <button class="red" id="saveItem">Save content</button>
+   <button class="secondary" id="logoutBtn">Sign out</button>
+   <p class="note" id="saveMsg"></p>
+   <h3>Manage content</h3>
+   <div id="adminList" class="adminlist"></div>
+  </div>
+ </div>
 </div>
 
-<div id="loginArea">
-<p class="note">Administrator sign-in</p>
-<div class="field">
-<label>Admin email</label>
-<input id="adminEmail" type="email" autocomplete="username">
-</div>
-<div class="field">
-<label>Admin password</label>
-<input id="adminPassword" type="password" autocomplete="current-password">
-</div>
-<div class="field">
-<label>Admin code</label>
-<input id="adminCode" type="password">
-</div>
-<button id="loginBtn">Unlock admin panel</button>
-<p class="note" id="loginMsg"></p>
-</div>
-
-<div id="panelArea" class="hidden">
-<h3>Add content</h3>
-
-<div class="field">
-<label>Title</label>
-<input id="itemTitle" placeholder="Movie or channel name">
-</div>
-
-<div class="row">
-<div class="field">
-<label>Category</label>
-<select id="itemCategory">
-<option>Live TV</option>
-<option>Movie</option>
-<option>Web Series</option>
-</select>
-</div>
-<div class="field">
-<label>Poster image URL (optional)</label>
-<input id="itemPoster" placeholder="https://...">
-</div>
-</div>
-
-<div class="field">
-<label>Video / Stream / Embed URL</label>
-<input id="itemUrl" placeholder="Paste your authorized URL here" type="url">
-</div>
-
-<p class="note">
-Supported: MP4, WebM, M3U8, MPD, YouTube, Vimeo and websites that allow embedding.
-</p>
-
-<div class="field">
-<label>Description (optional)</label>
-<textarea id="itemDescription"></textarea>
-</div>
-
-<button id="saveItem">Save content</button>
-<button id="logoutBtn" class="secondary">Sign out</button>
-<p class="note" id="saveMsg"></p>
-
-<h3>Manage content</h3>
-<div id="adminList" class="adminlist"></div>
-</div>
-</div>
-</div>
-
-<!-- WATCH MODAL -->
 <div class="modal" id="watchModal">
-<div class="box">
-<div class="row">
-<h2 id="watchTitle">Watch</h2>
-<button class="secondary" id="watchClose">Close</button>
-</div>
-<div id="watchFrame" class="player"></div>
-<p class="note" id="watchDescription"></p>
-<p class="note" id="playerMsg"></p>
-</div>
+ <div class="box">
+  <div class="box-top"><h2 id="watchTitle">Watch</h2><button class="secondary" id="watchClose">Close</button></div>
+  <div id="watchFrame" class="player"></div>
+  <p class="note" id="watchDescription"></p>
+  <p class="note" id="playerMsg"></p>
+ </div>
 </div>
 
 <script type="module">
-import {initializeApp}
-from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import {
-getFirestore,collection,addDoc,deleteDoc,doc,
-onSnapshot,query,orderBy,serverTimestamp
+ getFirestore,collection,addDoc,deleteDoc,doc,
+ onSnapshot,query,orderBy,serverTimestamp
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
-
 import {
-getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged
+ getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 
 const firebaseConfig={
-apiKey:'AIzaSyCe0R6SSRBiHugFg9TN008tHDL4AoQCbXg',
-authDomain:'mds-play-2f680.firebaseapp.com',
-projectId:'mds-play-2f680',
-storageBucket:'mds-play-2f680.firebasestorage.app',
-messagingSenderId:'713735739792',
-appId:'1:713735739792:web:13b069bc956271bf9ffb15',
-measurementId:'G-1BMVS9B5MF'
+ apiKey:'AIzaSyCe0R6SSRBiHugFg9TN008tHDL4AoQCbXg',
+ authDomain:'mds-play-2f680.firebaseapp.com',
+ projectId:'mds-play-2f680',
+ storageBucket:'mds-play-2f680.firebasestorage.app',
+ messagingSenderId:'713735739792',
+ appId:'1:713735739792:web:13b069bc956271bf9ffb15',
+ measurementId:'G-1BMVS9B5MF'
 };
 
 const app=initializeApp(firebaseConfig);
 const db=getFirestore(app);
 const auth=getAuth(app);
 
-// Client-side code is only an extra check, not a security boundary.
-// Firestore rules and Firebase Authentication protect admin writes.
+// Extra client-side check only. Firestore security rules must protect writes.
 const ADMIN_CODE='Vision';
 
 let items=[];
-let filter='all';
 let isAdmin=false;
 let currentHls=null;
 let currentDash=null;
@@ -269,327 +209,327 @@ let currentDash=null;
 const $=id=>document.getElementById(id);
 
 function safeUrl(value){
-try{
-const u=new URL(value);
-return ['https:','http:'].includes(u.protocol)?u.href:'';
-}catch{
-return '';
-}
+ try{
+  const u=new URL(value);
+  return ['https:','http:'].includes(u.protocol)?u.href:'';
+ }catch{return ''}
 }
 
 $('year').textContent=new Date().getFullYear();
 
+function makeCard(x,live=false){
+ const card=document.createElement('article');
+ card.className='card'+(live?' live-card':'');
+ const poster=document.createElement('div');
+ poster.className='poster';
+ const src=safeUrl(x.poster);
+
+ if(src){
+  const img=document.createElement('img');
+  img.src=src;
+  img.alt=x.title||'';
+  img.loading='lazy';
+  img.onerror=()=>{img.remove();poster.textContent='▶'};
+  poster.append(img);
+ }else{
+  poster.textContent='▶';
+ }
+
+ const info=document.createElement('div');
+ info.className='card-info';
+
+ const title=document.createElement('h3');
+ title.textContent=x.title||'Untitled';
+
+ const category=document.createElement('p');
+ category.textContent=live?'LIVE CHANNEL':(x.category||'Content').toUpperCase();
+
+ const open=document.createElement('button');
+ open.className='card-open';
+ open.textContent=live?'▶ Watch':'▶ Play';
+ open.onclick=()=>watch(x);
+
+ info.append(title,category,open);
+ card.append(poster,info);
+ card.onclick=e=>{if(e.target!==open)watch(x)};
+ return card;
+}
+
+function fillShelf(id,list,live=false){
+ const el=$(id);
+ el.innerHTML='';
+
+ if(!list.length){
+  const empty=document.createElement('div');
+  empty.className='empty';
+  empty.textContent='No content added yet.';
+  el.append(empty);
+  return;
+ }
+
+ list.forEach(x=>el.append(makeCard(x,live)));
+}
+
 function render(){
-const shown=filter==='all'
-?items
-:items.filter(x=>x.category===filter);
+ const term=$('searchInput').value.trim().toLowerCase();
 
-$('sectionTitle').textContent=
-filter==='all'?'Latest content':filter;
+ const filtered=items.filter(x=>
+  !term||[x.title,x.description,x.category].join(' ').toLowerCase().includes(term)
+ );
 
-$('catalog').innerHTML='';
-
-if(!shown.length){
-$('catalog').innerHTML=
-'<div class="empty">No content added yet.</div>';
-return;
-}
-
-for(const x of shown){
-const card=document.createElement('article');
-card.className='item';
-
-const poster=safeUrl(x.poster);
-
-card.innerHTML=`
-<div class="poster">
-${poster
-?`<img src="${poster}" alt="" style="width:100%;height:100%;object-fit:cover">`
-:'▶'}
-</div>
-<div class="itembody">
-<h3></h3>
-<p></p>
-<button>Open</button>
-</div>`;
-
-card.querySelector('h3').textContent=x.title||'Untitled';
-card.querySelector('p').textContent=x.category||'Content';
-card.querySelector('button').onclick=()=>watch(x);
-
-$('catalog').append(card);
-}
+ fillShelf('liveCatalog',filtered.filter(x=>x.category==='Live TV'),true);
+ fillShelf('movieCatalog',filtered.filter(x=>x.category==='Movie'));
+ fillShelf('seriesCatalog',filtered.filter(x=>x.category==='Web Series'));
+ fillShelf('allCatalog',filtered);
 }
 
 function stopPlayer(){
-if(currentHls){
-currentHls.destroy();
-currentHls=null;
-}
+ if(currentHls){
+  currentHls.destroy();
+  currentHls=null;
+ }
 
-if(currentDash){
-currentDash.reset();
-currentDash=null;
-}
+ if(currentDash){
+  currentDash.reset();
+  currentDash=null;
+ }
 
-$('watchFrame').innerHTML='';
+ $('watchFrame').innerHTML='';
 }
 
 function watch(x){
-stopPlayer();
+ stopPlayer();
 
-const url=safeUrl(x.url);
+ const url=safeUrl(x.url);
 
-$('watchTitle').textContent=x.title||'Watch';
-$('watchDescription').textContent=x.description||'';
-$('playerMsg').textContent='';
-$('watchModal').classList.add('show');
+ $('watchTitle').textContent=x.title||'Watch';
+ $('watchDescription').textContent=x.description||'';
+ $('playerMsg').textContent='';
+ $('watchModal').classList.add('show');
 
-if(!url){
-$('playerMsg').textContent='Invalid video URL.';
-return;
-}
+ if(!url){
+  $('playerMsg').textContent='Invalid video URL.';
+  return;
+ }
 
-const isHls=/\.m3u8($|\?)/i.test(url);
-const isDash=/\.mpd($|\?)/i.test(url);
-const isDirect=/\.(mp4|webm|ogg|m4v)($|\?)/i.test(url);
-const isYouTube=/youtube\.com|youtu\.be/i.test(url);
-const isVimeo=/vimeo\.com/i.test(url);
+ const isHls=/\.m3u8($|\?)/i.test(url);
+ const isDash=/\.mpd($|\?)/i.test(url);
+ const isDirect=/\.(mp4|webm|ogg|m4v)($|\?)/i.test(url);
+ const isYouTube=/youtube\.com|youtu\.be/i.test(url);
+ const isVimeo=/vimeo\.com/i.test(url);
 
-if(isYouTube||isVimeo){
-let embed='';
+ if(isYouTube||isVimeo){
+  let embed='';
 
-try{
-const u=new URL(url);
+  try{
+   const u=new URL(url);
 
-if(isYouTube){
-let id=u.hostname.includes('youtu.be')
-?u.pathname.slice(1)
-:u.searchParams.get('v')||u.pathname.split('/').pop();
+   if(isYouTube){
+    let id=u.hostname.includes('youtu.be')
+     ?u.pathname.slice(1)
+     :u.searchParams.get('v')||u.pathname.split('/').pop();
 
-if(u.pathname.includes('/embed/')){
-id=u.pathname.split('/embed/')[1].split('/')[0];
-}
+    if(u.pathname.includes('/embed/')){
+     id=u.pathname.split('/embed/')[1].split('/')[0];
+    }
 
-embed='https://www.youtube.com/embed/'+encodeURIComponent(id);
+    embed='https://www.youtube.com/embed/'+encodeURIComponent(id);
+   }else{
+    const id=u.pathname.split('/').filter(Boolean).pop();
+    embed='https://player.vimeo.com/video/'+encodeURIComponent(id);
+   }
+  }catch{}
 
-}else{
-const id=u.pathname.split('/').filter(Boolean).pop();
-embed='https://player.vimeo.com/video/'+encodeURIComponent(id);
-}
+  if(!embed){
+   $('playerMsg').textContent='Invalid embed URL.';
+   return;
+  }
 
-}catch{}
+  const frame=document.createElement('iframe');
+  frame.src=embed;
+  frame.allow='autoplay; fullscreen; picture-in-picture';
+  frame.allowFullscreen=true;
+  $('watchFrame').append(frame);
+  return;
+ }
 
-if(!embed){
-$('playerMsg').textContent='Invalid embed URL.';
-return;
-}
+ if(isHls||isDash||isDirect){
+  const video=document.createElement('video');
+  video.controls=true;
+  video.playsInline=true;
+  video.preload='metadata';
+  video.setAttribute('controlsList','nodownload');
+  $('watchFrame').append(video);
 
-const frame=document.createElement('iframe');
-frame.src=embed;
-frame.allow='autoplay; fullscreen; picture-in-picture';
-frame.allowFullscreen=true;
-$('watchFrame').append(frame);
-return;
-}
+  if(isHls){
+   if(video.canPlayType('application/vnd.apple.mpegurl')){
+    video.src=url;
+   }else if(window.Hls&&Hls.isSupported()){
+    currentHls=new Hls();
+    currentHls.loadSource(url);
+    currentHls.attachMedia(video);
 
-if(isHls||isDash||isDirect){
-const video=document.createElement('video');
+    currentHls.on(Hls.Events.ERROR,(event,data)=>{
+     if(data.fatal){
+      $('playerMsg').textContent='Stream unavailable. Check URL, expiry, CORS or access permission.';
+     }
+    });
+   }else{
+    $('playerMsg').textContent='HLS is not supported in this browser.';
+   }
+  }else if(isDash){
+   if(window.dashjs){
+    currentDash=dashjs.MediaPlayer().create();
+    currentDash.initialize(video,url,false);
+    currentDash.on('error',()=>{
+     $('playerMsg').textContent='DASH stream unavailable or blocked.';
+    });
+   }else{
+    $('playerMsg').textContent='DASH player could not load.';
+   }
+  }else{
+   video.src=url;
+  }
 
-video.controls=true;
-video.playsInline=true;
-video.preload='metadata';
-video.setAttribute('controlsList','nodownload');
+  video.onerror=()=>{
+   $('playerMsg').textContent='Video unavailable. The link may be expired or blocked.';
+  };
+  return;
+ }
 
-$('watchFrame').append(video);
+ const frame=document.createElement('iframe');
+ frame.src=url;
+ frame.allow='autoplay; fullscreen; picture-in-picture';
+ frame.allowFullscreen=true;
+ frame.referrerPolicy='strict-origin-when-cross-origin';
+ $('watchFrame').append(frame);
 
-if(isHls){
-
-if(video.canPlayType('application/vnd.apple.mpegurl')){
-video.src=url;
-
-}else if(window.Hls&&Hls.isSupported()){
-currentHls=new Hls();
-currentHls.loadSource(url);
-currentHls.attachMedia(video);
-
-currentHls.on(Hls.Events.ERROR,(event,data)=>{
-if(data.fatal){
-$('playerMsg').textContent=
-'Stream unavailable. Check URL, expiry, CORS or access permission.';
-}
-});
-
-}else{
-$('playerMsg').textContent='HLS is not supported in this browser.';
-}
-
-}else if(isDash){
-
-if(window.dashjs){
-currentDash=dashjs.MediaPlayer().create();
-currentDash.initialize(video,url,false);
-
-currentDash.on('error',()=>{
-$('playerMsg').textContent=
-'DASH stream unavailable or blocked.';
-});
-
-}else{
-$('playerMsg').textContent='DASH player could not load.';
-}
-
-}else{
-video.src=url;
-}
-
-video.onerror=()=>{
-$('playerMsg').textContent=
-'Video unavailable. The link may be expired or blocked.';
-};
-
-return;
-}
-
-// Try embedding other website URLs.
-// Providers may block iframe embedding.
-const frame=document.createElement('iframe');
-frame.src=url;
-frame.allow='autoplay; fullscreen; picture-in-picture';
-frame.allowFullscreen=true;
-frame.referrerPolicy='strict-origin-when-cross-origin';
-
-$('watchFrame').append(frame);
-
-$('playerMsg').textContent=
-'Website embedding is being attempted. If the provider blocks embedding, playback will not work here.';
+ $('playerMsg').textContent='If the provider blocks embedding, playback may not work here.';
 }
 
 function renderAdmin(){
-$('adminList').innerHTML='';
+ $('adminList').innerHTML='';
 
-for(const x of items){
-const r=document.createElement('div');
-r.className='adminrow';
+ items.forEach(x=>{
+  const r=document.createElement('div');
+  r.className='adminrow';
 
-const t=document.createElement('span');
-t.textContent=`${x.title||'Untitled'} · ${x.category||''}`;
+  const t=document.createElement('span');
+  t.textContent=(x.title||'Untitled')+' · '+(x.category||'');
 
-const b=document.createElement('button');
-b.className='secondary';
-b.textContent='Delete';
+  const b=document.createElement('button');
+  b.className='secondary';
+  b.textContent='Delete';
 
-b.onclick=async()=>{
-if(confirm('Delete this content?')){
-try{
-await deleteDoc(doc(db,'content',x.id));
-}catch(e){
-$('saveMsg').textContent=e.message;
-}
-}
-};
+  b.onclick=async()=>{
+   if(confirm('Delete this content?')){
+    try{
+     await deleteDoc(doc(db,'content',x.id));
+    }catch(e){
+     $('saveMsg').textContent=e.message;
+    }
+   }
+  };
 
-r.append(t,b);
-$('adminList').append(r);
-}
+  r.append(t,b);
+  $('adminList').append(r);
+ });
 }
 
 onSnapshot(
-query(collection(db,'content'),orderBy('createdAt','desc')),
-(snap)=>{
-items=snap.docs.map(d=>({id:d.id,...d.data()}));
-render();
-if(isAdmin)renderAdmin();
-},
-(err)=>{
-$('catalog').innerHTML=
-'<div class="empty">Could not load content. Check Firestore rules.</div>';
-console.error(err);
-}
+ query(collection(db,'content'),orderBy('createdAt','desc')),
+ snap=>{
+  items=snap.docs.map(d=>({id:d.id,...d.data()}));
+  render();
+  if(isAdmin)renderAdmin();
+ },
+ err=>{
+  $('allCatalog').innerHTML='<div class="empty">Could not load content. Check Firestore rules.</div>';
+  console.error(err);
+ }
 );
 
-$('adminOpen').onclick=()=>
-$('adminModal').classList.add('show');
-
-$('adminClose').onclick=()=>
-$('adminModal').classList.remove('show');
-
-$('watchClose').onclick=()=>{
-$('watchModal').classList.remove('show');
-stopPlayer();
-};
-
-$('browseBtn').onclick=()=>
-$('catalog').scrollIntoView({behavior:'smooth'});
+$('searchInput').addEventListener('input',render);
 
 document.querySelectorAll('[data-filter]').forEach(b=>{
-b.onclick=()=>{
-filter=b.dataset.filter;
-render();
-};
+ b.onclick=()=>{
+  document.querySelectorAll('[data-filter]').forEach(n=>n.classList.remove('active'));
+  b.classList.add('active');
+
+  const target=
+   b.dataset.filter==='all'?'allSection':
+   b.dataset.filter==='Live TV'?'liveSection':
+   b.dataset.filter==='Movie'?'movieSection':'seriesSection';
+
+  $(target).scrollIntoView({behavior:'smooth'});
+ };
 });
 
+$('browseBtn').onclick=()=>$('allSection').scrollIntoView({behavior:'smooth'});
+$('heroLiveBtn').onclick=()=>$('liveSection').scrollIntoView({behavior:'smooth'});
+$('adminOpen').onclick=()=>$('adminModal').classList.add('show');
+$('adminClose').onclick=()=>$('adminModal').classList.remove('show');
+
+$('watchClose').onclick=()=>{
+ $('watchModal').classList.remove('show');
+ stopPlayer();
+};
+
 $('loginBtn').onclick=async()=>{
-const msg=$('loginMsg');
-msg.textContent='';
+ const msg=$('loginMsg');
+ msg.textContent='';
 
-if($('adminCode').value!==ADMIN_CODE){
-msg.textContent='Incorrect admin code.';
-return;
-}
+ if($('adminCode').value!==ADMIN_CODE){
+  msg.textContent='Incorrect admin code.';
+  return;
+ }
 
-try{
-await signInWithEmailAndPassword(
-auth,
-$('adminEmail').value.trim(),
-$('adminPassword').value
-);
-msg.textContent='';
-}catch(e){
-msg.textContent='Admin sign-in failed: '+e.message;
-}
+ try{
+  await signInWithEmailAndPassword(
+   auth,
+   $('adminEmail').value.trim(),
+   $('adminPassword').value
+  );
+  msg.textContent='';
+ }catch(e){
+  msg.textContent='Admin sign-in failed: '+e.message;
+ }
 };
 
 onAuthStateChanged(auth,user=>{
-isAdmin=!!user;
-
-$('loginArea').classList.toggle('hidden',isAdmin);
-$('panelArea').classList.toggle('hidden',!isAdmin);
-
-if(isAdmin)renderAdmin();
+ isAdmin=!!user;
+ $('loginArea').classList.toggle('hidden',isAdmin);
+ $('panelArea').classList.toggle('hidden',!isAdmin);
+ if(isAdmin)renderAdmin();
 });
 
 $('saveItem').onclick=async()=>{
-const title=$('itemTitle').value.trim();
-const url=safeUrl($('itemUrl').value.trim());
+ const title=$('itemTitle').value.trim();
+ const url=safeUrl($('itemUrl').value.trim());
 
-if(!title||!url){
-$('saveMsg').textContent='Title and a valid URL are required.';
-return;
-}
+ if(!title||!url){
+  $('saveMsg').textContent='Title and a valid URL are required.';
+  return;
+ }
 
-try{
-await addDoc(collection(db,'content'),{
-title,
-category:$('itemCategory').value,
-poster:safeUrl($('itemPoster').value.trim()),
-url,
-description:$('itemDescription').value.trim(),
-createdAt:serverTimestamp()
-});
+ try{
+  await addDoc(collection(db,'content'),{
+   title,
+   category:$('itemCategory').value,
+   poster:safeUrl($('itemPoster').value.trim()),
+   url,
+   description:$('itemDescription').value.trim(),
+   createdAt:serverTimestamp()
+  });
 
-$('saveMsg').textContent='Content saved.';
-
-['itemTitle','itemPoster','itemUrl','itemDescription']
-.forEach(id=>$(id).value='');
-
-}catch(e){
-$('saveMsg').textContent='Could not save: '+e.message;
-}
+  $('saveMsg').textContent='Content saved.';
+  ['itemTitle','itemPoster','itemUrl','itemDescription'].forEach(id=>$(id).value='');
+ }catch(e){
+  $('saveMsg').textContent='Could not save: '+e.message;
+ }
 };
 
 $('logoutBtn').onclick=()=>signOut(auth);
-
 </script>
 </body>
 </html>
