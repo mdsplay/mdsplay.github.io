@@ -152,7 +152,7 @@ main{margin-top:-30px}
   <div id="watchlistCatalog" class="shelf"><div class="empty">Add titles to your watchlist.</div></div>
  </section>
  <section class="section" id="trendingSection">
-  <div class="section-head"><h2>Trending on This Device</h2></div>
+  <div class="section-head"><h2>Trending Now</h2></div>
   <div id="trendingCatalog" class="shelf"><div class="empty">Watch activity will appear here.</div></div>
  </section>
  <section class="section" id="popularSection">
@@ -222,6 +222,7 @@ main{margin-top:-30px}
    <div class="field"><label>Video / Stream / Embed URL</label><input id="itemUrl" placeholder="Paste an authorized URL" type="url"></div>
    <p class="note">Supported: MP4, WebM, M3U8, MPD, YouTube, Vimeo and websites that permit embedding.</p>
    <div class="field"><label>Description</label><textarea id="itemDescription"></textarea></div>
+   <div class="field"><label style="display:flex;align-items:center;gap:10px"><input id="itemTrending" type="checkbox" style="width:auto"> Show this title in Trending</label></div>
    <button class="red" id="saveItem">Save content</button>
    <button class="secondary" id="logoutBtn">Sign out</button>
    <p class="note" id="saveMsg"></p>
@@ -259,7 +260,7 @@ document.getElementById('adminDot').addEventListener('click',()=>{
 
 <script type="module">
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-import {getFirestore,collection,addDoc,deleteDoc,doc,onSnapshot,query,orderBy,serverTimestamp} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import {getFirestore,collection,addDoc,deleteDoc,doc,onSnapshot,query,orderBy,serverTimestamp,updateDoc} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import {getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 
 const firebaseConfig={
@@ -455,7 +456,6 @@ function renderPersonalSections(){
 
 function renderDiscoverySections(){
  const views=getViews();
- const history=getHistory();
 
  const recently=[...items].sort((a,b)=>{
   const ta=a.createdAt?.toMillis?a.createdAt.toMillis():0;
@@ -463,9 +463,8 @@ function renderDiscoverySections(){
   return tb-ta;
  }).slice(0,20);
 
- const trending=[...items]
-  .sort((a,b)=>(history[b.id]?.watchedAt||0)-(history[a.id]?.watchedAt||0))
-  .filter(x=>history[x.id]).slice(0,20);
+ // Trending titles are selected by the administrator.
+ const trending=[...items].filter(x=>x.trending===true).slice(0,20);
 
  const popular=[...items]
   .sort((a,b)=>(views[b.id]||0)-(views[a.id]||0))
@@ -685,21 +684,35 @@ function renderAdmin(){
   const t=document.createElement('span');
   t.textContent=(x.title||'Untitled')+' · '+(x.category||'');
 
-  const b=document.createElement('button');
-  b.className='secondary';
-  b.textContent='Delete';
+  const actions=document.createElement('div');
+  actions.style.display='flex';
+  actions.style.gap='6px';
+  actions.style.flexWrap='wrap';
 
-  b.onclick=async()=>{
-   if(confirm('Delete this content?')){
-    try{
-     await deleteDoc(doc(db,'content',x.id));
-    }catch(e){
-     $('saveMsg').textContent=e.message;
-    }
+  const trendBtn=document.createElement('button');
+  trendBtn.className=x.trending?'red':'secondary';
+  trendBtn.textContent=x.trending?'Trending ON':'Trending OFF';
+  trendBtn.onclick=async()=>{
+   try{
+    await updateDoc(doc(db,'content',x.id),{trending:!x.trending});
+    $('saveMsg').textContent='Trending setting updated.';
+   }catch(e){
+    $('saveMsg').textContent='Update failed: '+e.message;
    }
   };
 
-  r.append(t,b);
+  const delBtn=document.createElement('button');
+  delBtn.className='secondary';
+  delBtn.textContent='Delete';
+  delBtn.onclick=async()=>{
+   if(confirm('Delete this content?')){
+    try{await deleteDoc(doc(db,'content',x.id));}
+    catch(e){$('saveMsg').textContent=e.message;}
+   }
+  };
+
+  actions.append(trendBtn,delBtn);
+  r.append(t,actions);
   $('adminList').append(r);
  });
 }
@@ -886,6 +899,7 @@ $('saveItem').onclick=async()=>{
  const poster=safeUrl($('itemPoster').value.trim());
  const url=safeUrl($('itemUrl').value.trim());
  const description=$('itemDescription').value.trim();
+ const trending=$('itemTrending').checked;
 
  if(!title){
   $('saveMsg').textContent='Please enter a title.';
@@ -905,11 +919,12 @@ $('saveItem').onclick=async()=>{
 
  try{
   await addDoc(collection(db,'content'),{
-   title,category,genre,language,year,poster,url,description,
+   title,category,genre,language,year,poster,url,description,trending,
    createdAt:serverTimestamp()
   });
 
   $('saveMsg').textContent='Content saved successfully.';
+  $('itemTrending').checked=false;
   ['itemTitle','itemGenre','itemLanguage','itemYear','itemPoster','itemUrl','itemDescription'].forEach(id=>{
    $(id).value='';
   });
