@@ -135,34 +135,10 @@ main{margin-top:-30px}
  </div>
 </section>
 
-<div class="filters">
- <select id="genreFilter"><option value="">All Genres</option></select>
- <select id="languageFilter"><option value="">All Languages</option></select>
- <select id="yearFilter"><option value="">All Years</option></select>
- <button id="clearFilters">Clear Filters</button>
-</div>
 
 <main>
- <section class="section" id="continueSection">
-  <div class="section-head"><h2>Continue Watching</h2></div>
-  <div id="continueCatalog" class="shelf"><div class="empty">Your watch progress will appear here.</div></div>
- </section>
- <section class="section" id="watchlistSection">
-  <div class="section-head"><h2>My Watchlist</h2></div>
-  <div id="watchlistCatalog" class="shelf"><div class="empty">Add titles to your watchlist.</div></div>
- </section>
- <section class="section" id="trendingSection">
-  <div class="section-head"><h2>Trending Now</h2></div>
-  <div id="trendingCatalog" class="shelf"><div class="empty">Watch activity will appear here.</div></div>
- </section>
- <section class="section" id="popularSection">
-  <div class="section-head"><h2>Popular on This Device</h2></div>
-  <div id="popularCatalog" class="shelf"><div class="empty">Your viewing activity will help build this list.</div></div>
- </section>
- <section class="section" id="recentSection">
-  <div class="section-head"><h2>Recently Added</h2></div>
-  <div id="recentCatalog" class="shelf"><div class="empty">Recently added titles will appear here.</div></div>
- </section>
+
+
  <section class="section" id="liveSection">
   <div class="section-head"><h2>Live TV Channels</h2></div>
   <div id="liveCatalog" class="shelf live-shelf"><div class="empty">Loading channels…</div></div>
@@ -387,40 +363,7 @@ function fillShelf(id,list,live=false){
 
 function getFilteredItems(){
  const term=$('searchInput').value.trim().toLowerCase();
- const genre=$('genreFilter').value.toLowerCase();
- const language=$('languageFilter').value.toLowerCase();
- const year=$('yearFilter').value;
- return items.filter(x=>{
-  const matchesText=!term||[x.title,x.description,x.category,x.genre,x.language,x.year].join(' ').toLowerCase().includes(term);
-  const genres=String(x.genre||'').toLowerCase();
-  const matchesGenre=!genre||genres.split(',').map(v=>v.trim()).includes(genre);
-  const matchesLanguage=!language||String(x.language||'').toLowerCase()===language;
-  const matchesYear=!year||String(x.year||'')===year;
-  return matchesText&&matchesGenre&&matchesLanguage&&matchesYear;
- });
-}
-
-function populateFilters(){
- const genres=new Set(),languages=new Set(),years=new Set();
- items.forEach(x=>{
-  String(x.genre||'').split(',').forEach(g=>{if(g.trim())genres.add(g.trim())});
-  if(x.language)languages.add(String(x.language).trim());
-  if(x.year)years.add(String(x.year));
- });
- const update=(id,values,label,sortFn)=>{
-  const el=$(id),old=el.value;
-  el.innerHTML='';
-  const first=document.createElement('option');
-  first.value='';first.textContent=label;el.append(first);
-  [...values].sort(sortFn).forEach(v=>{
-   const o=document.createElement('option');
-   o.value=v;o.textContent=v;el.append(o);
-  });
-  if([...el.options].some(o=>o.value===old))el.value=old;
- };
- update('genreFilter',genres,'All Genres',(a,b)=>a.localeCompare(b));
- update('languageFilter',languages,'All Languages',(a,b)=>a.localeCompare(b));
- update('yearFilter',years,'All Years',(a,b)=>Number(b)-Number(a));
+ return items.filter(x=>!term||[x.title,x.description,x.category,x.genre,x.language,x.year].join(' ').toLowerCase().includes(term));
 }
 
 function render(){
@@ -449,30 +392,17 @@ function renderPersonalSections(){
   .sort((a,b)=>(b.watchedAt||0)-(a.watchedAt||0))
   .map(h=>getItem(h.id)).filter(Boolean);
 
- fillShelf('continueCatalog',continueItems);
- fillShelf('watchlistCatalog',savedItems);
  fillShelf('historyCatalog',historyItems);
 }
 
 function renderDiscoverySections(){
  const views=getViews();
 
- const recently=[...items].sort((a,b)=>{
-  const ta=a.createdAt?.toMillis?a.createdAt.toMillis():0;
-  const tb=b.createdAt?.toMillis?b.createdAt.toMillis():0;
-  return tb-ta;
- }).slice(0,20);
-
- // Trending titles are selected by the administrator.
- const trending=[...items].filter(x=>x.trending===true).slice(0,20);
-
  const popular=[...items]
   .sort((a,b)=>(views[b.id]||0)-(views[a.id]||0))
   .filter(x=>(views[x.id]||0)>0).slice(0,20);
 
- fillShelf('recentCatalog',recent);
- fillShelf('trendingCatalog',trending);
- fillShelf('popularCatalog',popular);
+
 }
 
 function stopPlayer(){
@@ -719,7 +649,6 @@ function renderAdmin(){
 
 onSnapshot(query(collection(db,'content'),orderBy('createdAt','desc')),snap=>{
  items=snap.docs.map(d=>({id:d.id,...d.data()}));
- populateFilters();
  render();
  renderPersonalSections();
  renderDiscoverySections();
@@ -734,18 +663,6 @@ onSnapshot(query(collection(db,'content'),orderBy('createdAt','desc')),snap=>{
 });
 
 $('searchInput').addEventListener('input',render);
-['genreFilter','languageFilter','yearFilter'].forEach(id=>{
- $(id).addEventListener('change',render);
-});
-
-$('clearFilters').onclick=()=>{
- $('genreFilter').value='';
- $('languageFilter').value='';
- $('yearFilter').value='';
- $('searchInput').value='';
- render();
-};
-
 document.querySelectorAll('[data-filter]').forEach(b=>{
  b.onclick=()=>{
   document.querySelectorAll('[data-filter]').forEach(n=>n.classList.remove('active'));
@@ -755,7 +672,7 @@ document.querySelectorAll('[data-filter]').forEach(b=>{
    b.dataset.filter==='Live TV'?'liveSection':
    b.dataset.filter==='Movie'?'movieSection':
    b.dataset.filter==='Web Series'?'seriesSection':
-   'watchlistSection';
+   'allSection';
 
   $(target).scrollIntoView({behavior:'smooth'});
  };
