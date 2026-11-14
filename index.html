@@ -6,10 +6,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#080808">
 <title>MDSPLAY | Stream Anything</title>
-
 <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17"></script>
 <script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
-
 <style>
 :root{--bg:#080808;--red:#e50914;--text:#fff;--muted:#aaa}
 *{box-sizing:border-box}
@@ -21,7 +19,7 @@ button:hover{filter:brightness(.88)}
 .secondary{background:#333;color:#fff}
 .red{background:var(--red);color:#fff}
 header{min-height:68px;position:sticky;top:0;z-index:8;display:flex;align-items:center;gap:28px;padding:10px 4.5%;background:#080808f2}
-.brand{font-size:29px;letter-spacing:-1.5px;font-weight:900;color:var(--red);white-space:nowrap;cursor:pointer;user-select:none}
+.brand{font-size:29px;letter-spacing:-1.5px;font-weight:900;color:var(--red);white-space:nowrap}
 .nav{display:flex;align-items:center;gap:20px;flex:1;flex-wrap:wrap}
 .nav button{padding:5px 0;background:transparent;color:#ddd;font-weight:500}
 .nav button.active,.nav button:hover{color:#fff;font-weight:800}
@@ -78,6 +76,28 @@ footer{border-top:1px solid #292929;padding:25px 5%;color:#777;font-size:12px;te
 .auto-result h4{margin:0 0 5px}
 .auto-result p{font-size:12px;color:#bbb;margin:0 0 8px}
 .auto-status{font-size:12px;color:#bbb;margin:8px 0}
+
+/* Fixed Admin Dot */
+.admin-dot{
+ position:fixed;
+ right:18px;
+ bottom:20px;
+ width:48px;
+ height:48px;
+ border-radius:50%;
+ background:#e50914;
+ color:white;
+ border:2px solid white;
+ font-size:23px;
+ font-weight:900;
+ z-index:30;
+ box-shadow:0 4px 18px #0009;
+ display:grid;
+ place-items:center;
+ padding:0;
+}
+.admin-dot:active{transform:scale(.92)}
+
 @media(max-width:760px){
  header{min-height:62px;padding:12px 4%;gap:10px;flex-wrap:wrap}
  .brand{font-size:25px}
@@ -94,11 +114,10 @@ footer{border-top:1px solid #292929;padding:25px 5%;color:#777;font-size:12px;te
 }
 </style>
 </head>
-
 <body>
 
 <header>
- <div class="brand" id="brandSecret" title="MDSPLAY">MDSPLAY</div>
+ <div class="brand" title="MDSPLAY">MDSPLAY</div>
  <nav class="nav">
   <button class="active" data-filter="all">Home</button>
   <button data-filter="Movie">Movies</button>
@@ -113,8 +132,8 @@ footer{border-top:1px solid #292929;padding:25px 5%;color:#777;font-size:12px;te
 <section class="hero">
  <div class="hero-content">
   <div class="kicker">MDSPLAY Original Experience</div>
-  <h1 id="heroTitle">Stories worth staying in for.</h1>
-  <p id="heroDescription">Discover movies, series and live channels—all in one place.</p>
+  <h1>Stories worth staying in for.</h1>
+  <p>Discover movies, series and live channels—all in one place.</p>
   <div class="hero-buttons">
    <button class="red" id="browseBtn">▶ Explore</button>
    <button class="more" id="heroLiveBtn">▣ Live TV</button>
@@ -127,17 +146,14 @@ footer{border-top:1px solid #292929;padding:25px 5%;color:#777;font-size:12px;te
   <div class="section-head"><h2>Live TV Channels</h2></div>
   <div id="liveCatalog" class="shelf live-shelf"><div class="empty">Loading channels…</div></div>
  </section>
-
  <section class="section" id="movieSection">
   <div class="section-head"><h2>Movies</h2></div>
   <div id="movieCatalog" class="shelf"><div class="empty">Loading movies…</div></div>
  </section>
-
  <section class="section" id="seriesSection">
   <div class="section-head"><h2>Web Series & Shows</h2></div>
   <div id="seriesCatalog" class="shelf"><div class="empty">Loading shows…</div></div>
  </section>
-
  <section class="section" id="allSection">
   <div class="section-head"><h2>Explore All</h2></div>
   <div id="allCatalog" class="shelf"><div class="empty">Loading content…</div></div>
@@ -146,35 +162,33 @@ footer{border-top:1px solid #292929;padding:25px 5%;color:#777;font-size:12px;te
 
 <footer>© <span id="year"></span> MDSPLAY. Content is provided by its respective rights holders.</footer>
 
+<!-- Admin Dot -->
+<button class="admin-dot" id="adminDot" title="Admin Login" aria-label="Open Admin Login">●</button>
+
+<!-- Admin Modal -->
 <div class="modal" id="adminModal">
  <div class="box">
   <div class="box-top"><h2>Admin access</h2><button class="secondary" id="adminClose">Close</button></div>
-
   <div id="loginArea">
    <p class="note">Administrator sign-in</p>
    <div class="field"><label>Admin email</label><input id="adminEmail" type="email" autocomplete="username"></div>
    <div class="field"><label>Admin password</label><input id="adminPassword" type="password" autocomplete="current-password"></div>
-   <div class="field"><label>Admin code</label><input id="adminCode" type="password"></div>
    <button class="red" id="loginBtn">Unlock admin panel</button>
    <p class="note" id="loginMsg"></p>
   </div>
 
   <div id="panelArea" class="hidden">
    <h3>Add content</h3>
-
    <div class="field">
     <label>Movie / Web Series Name</label>
     <input id="itemTitle" placeholder="Example: Inception">
    </div>
-
    <div class="row">
     <button type="button" class="red" id="autoFetchBtn">✨ Auto Find Details</button>
     <button type="button" class="secondary" id="clearAutoBtn">Clear Results</button>
    </div>
-
    <p class="auto-status" id="autoStatus">Enter a movie or web series name, then search.</p>
    <div id="autoResults" class="auto-results"></div>
-
    <div class="row">
     <div class="field">
      <label>Category</label>
@@ -189,29 +203,25 @@ footer{border-top:1px solid #292929;padding:25px 5%;color:#777;font-size:12px;te
      <input id="itemPoster" placeholder="https://...">
     </div>
    </div>
-
    <div class="field">
     <label>Video / Stream / Embed URL</label>
     <input id="itemUrl" placeholder="Paste an authorized URL" type="url">
    </div>
-
    <p class="note">Supported: MP4, WebM, M3U8, MPD, YouTube, Vimeo and websites that permit embedding.</p>
-
    <div class="field">
     <label>Description</label>
     <textarea id="itemDescription"></textarea>
    </div>
-
    <button class="red" id="saveItem">Save content</button>
    <button class="secondary" id="logoutBtn">Sign out</button>
    <p class="note" id="saveMsg"></p>
-
    <h3>Manage content</h3>
    <div id="adminList" class="adminlist"></div>
   </div>
  </div>
 </div>
 
+<!-- Video Player -->
 <div class="modal" id="watchModal">
  <div class="box">
   <div class="box-top"><h2 id="watchTitle">Watch</h2><button class="secondary" id="watchClose">Close</button></div>
@@ -221,14 +231,19 @@ footer{border-top:1px solid #292929;padding:25px 5%;color:#777;font-size:12px;te
  </div>
 </div>
 
+<script>
+/* This works independently of Firebase */
+document.getElementById('adminDot').addEventListener('click',()=>{
+ document.getElementById('adminModal').classList.add('show');
+});
+</script>
+
 <script type="module">
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-
 import {
  getFirestore,collection,addDoc,deleteDoc,doc,
  onSnapshot,query,orderBy,serverTimestamp
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
-
 import {
  getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
@@ -247,14 +262,10 @@ const app=initializeApp(firebaseConfig);
 const db=getFirestore(app);
 const auth=getAuth(app);
 
-// This is an extra client-side check, not the main security boundary.
-const ADMIN_CODE='Vision';
-
 let items=[];
 let isAdmin=false;
 let currentHls=null;
 let currentDash=null;
-
 const $=id=>document.getElementById(id);
 
 function safeUrl(value){
@@ -266,28 +277,11 @@ function safeUrl(value){
 
 $('year').textContent=new Date().getFullYear();
 
-/* Hidden admin entry: click MDSPLAY logo 5 times */
-let logoClicks=0;
-let logoTimer=null;
-
-$('brandSecret').addEventListener('click',()=>{
- logoClicks++;
- clearTimeout(logoTimer);
- logoTimer=setTimeout(()=>{logoClicks=0},2500);
-
- if(logoClicks>=5){
-  logoClicks=0;
-  $('adminModal').classList.add('show');
- }
-});
-
 function makeCard(x,live=false){
  const card=document.createElement('article');
  card.className='card'+(live?' live-card':'');
-
  const poster=document.createElement('div');
  poster.className='poster';
-
  const src=safeUrl(x.poster);
 
  if(src){
@@ -297,16 +291,12 @@ function makeCard(x,live=false){
   img.loading='lazy';
   img.onerror=()=>{img.remove();poster.textContent='▶'};
   poster.append(img);
- }else{
-  poster.textContent='▶';
- }
+ }else poster.textContent='▶';
 
  const info=document.createElement('div');
  info.className='card-info';
-
  const title=document.createElement('h3');
  title.textContent=x.title||'Untitled';
-
  const category=document.createElement('p');
  category.textContent=live?'LIVE CHANNEL':(x.category||'Content').toUpperCase();
 
@@ -324,7 +314,6 @@ function makeCard(x,live=false){
 function fillShelf(id,list,live=false){
  const el=$(id);
  el.innerHTML='';
-
  if(!list.length){
   const empty=document.createElement('div');
   empty.className='empty';
@@ -332,17 +321,14 @@ function fillShelf(id,list,live=false){
   el.append(empty);
   return;
  }
-
  list.forEach(x=>el.append(makeCard(x,live)));
 }
 
 function render(){
  const term=$('searchInput').value.trim().toLowerCase();
-
  const filtered=items.filter(x=>
   !term||[x.title,x.description,x.category].join(' ').toLowerCase().includes(term)
  );
-
  fillShelf('liveCatalog',filtered.filter(x=>x.category==='Live TV'),true);
  fillShelf('movieCatalog',filtered.filter(x=>x.category==='Movie'));
  fillShelf('seriesCatalog',filtered.filter(x=>x.category==='Web Series'));
@@ -350,24 +336,14 @@ function render(){
 }
 
 function stopPlayer(){
- if(currentHls){
-  currentHls.destroy();
-  currentHls=null;
- }
-
- if(currentDash){
-  currentDash.reset();
-  currentDash=null;
- }
-
+ if(currentHls){currentHls.destroy();currentHls=null}
+ if(currentDash){currentDash.reset();currentDash=null}
  $('watchFrame').innerHTML='';
 }
 
 function watch(x){
  stopPlayer();
-
  const url=safeUrl(x.url);
-
  $('watchTitle').textContent=x.title||'Watch';
  $('watchDescription').textContent=x.description||'';
  $('playerMsg').textContent='';
@@ -386,31 +362,18 @@ function watch(x){
 
  if(isYouTube||isVimeo){
   let embed='';
-
   try{
    const u=new URL(url);
-
    if(isYouTube){
-    let id=u.hostname.includes('youtu.be')
-     ?u.pathname.slice(1)
-     :u.searchParams.get('v')||u.pathname.split('/').pop();
-
-    if(u.pathname.includes('/embed/')){
-     id=u.pathname.split('/embed/')[1].split('/')[0];
-    }
-
+    let id=u.hostname.includes('youtu.be')?u.pathname.slice(1):u.searchParams.get('v')||u.pathname.split('/').pop();
+    if(u.pathname.includes('/embed/'))id=u.pathname.split('/embed/')[1].split('/')[0];
     embed='https://www.youtube.com/embed/'+encodeURIComponent(id);
    }else{
     const id=u.pathname.split('/').filter(Boolean).pop();
     embed='https://player.vimeo.com/video/'+encodeURIComponent(id);
    }
   }catch{}
-
-  if(!embed){
-   $('playerMsg').textContent='Invalid embed URL.';
-   return;
-  }
-
+  if(!embed){$('playerMsg').textContent='Invalid embed URL.';return}
   const frame=document.createElement('iframe');
   frame.src=embed;
   frame.allow='autoplay; fullscreen; picture-in-picture';
@@ -428,38 +391,24 @@ function watch(x){
   $('watchFrame').append(video);
 
   if(isHls){
-   if(video.canPlayType('application/vnd.apple.mpegurl')){
-    video.src=url;
-   }else if(window.Hls&&Hls.isSupported()){
+   if(video.canPlayType('application/vnd.apple.mpegurl'))video.src=url;
+   else if(window.Hls&&Hls.isSupported()){
     currentHls=new Hls();
     currentHls.loadSource(url);
     currentHls.attachMedia(video);
-
     currentHls.on(Hls.Events.ERROR,(event,data)=>{
-     if(data.fatal){
-      $('playerMsg').textContent='Stream unavailable. Check URL, expiry, CORS or access permission.';
-     }
+     if(data.fatal)$('playerMsg').textContent='Stream unavailable. Check URL, expiry, CORS or access permission.';
     });
-   }else{
-    $('playerMsg').textContent='HLS is not supported in this browser.';
-   }
+   }else $('playerMsg').textContent='HLS is not supported in this browser.';
   }else if(isDash){
    if(window.dashjs){
     currentDash=dashjs.MediaPlayer().create();
     currentDash.initialize(video,url,false);
-    currentDash.on('error',()=>{
-     $('playerMsg').textContent='DASH stream unavailable or blocked.';
-    });
-   }else{
-    $('playerMsg').textContent='DASH player could not load.';
-   }
-  }else{
-   video.src=url;
-  }
+    currentDash.on('error',()=>$('playerMsg').textContent='DASH stream unavailable or blocked.');
+   }else $('playerMsg').textContent='DASH player could not load.';
+  }else video.src=url;
 
-  video.onerror=()=>{
-   $('playerMsg').textContent='Video unavailable. The link may be expired or blocked.';
-  };
+  video.onerror=()=>$('playerMsg').textContent='Video unavailable. The link may be expired or blocked.';
   return;
  }
 
@@ -469,37 +418,28 @@ function watch(x){
  frame.allowFullscreen=true;
  frame.referrerPolicy='strict-origin-when-cross-origin';
  $('watchFrame').append(frame);
-
  $('playerMsg').textContent='If the provider blocks embedding, playback may not work here.';
 }
 
 function renderAdmin(){
  $('adminList').innerHTML='';
-
  items.forEach(x=>{
   const r=document.createElement('div');
   r.className='adminrow';
-
   const t=document.createElement('span');
   t.textContent=(x.title||'Untitled')+' · '+(x.category||'');
-
   const b=document.createElement('button');
   b.className='secondary';
   b.textContent='Delete';
-
   b.onclick=async()=>{
    if(confirm('Delete this content?')){
-    try{
-     await deleteDoc(doc(db,'content',x.id));
-    }catch(e){
-     $('saveMsg').textContent=e.message;
-    }
+    try{await deleteDoc(doc(db,'content',x.id))}
+    catch(e){$('saveMsg').textContent=e.message}
    }
   };
-
   r.append(t,b);
   $('adminList').append(r);
- }
+ });
 }
 
 onSnapshot(
@@ -525,12 +465,9 @@ document.querySelectorAll('[data-filter]').forEach(b=>{
  b.onclick=()=>{
   document.querySelectorAll('[data-filter]').forEach(n=>n.classList.remove('active'));
   b.classList.add('active');
-
-  const target=
-   b.dataset.filter==='all'?'allSection':
+  const target=b.dataset.filter==='all'?'allSection':
    b.dataset.filter==='Live TV'?'liveSection':
    b.dataset.filter==='Movie'?'movieSection':'seriesSection';
-
   $(target).scrollIntoView({behavior:'smooth'});
  };
 });
@@ -538,9 +475,7 @@ document.querySelectorAll('[data-filter]').forEach(b=>{
 $('browseBtn').onclick=()=>$('allSection').scrollIntoView({behavior:'smooth'});
 $('heroLiveBtn').onclick=()=>$('liveSection').scrollIntoView({behavior:'smooth'});
 
-$('adminClose').onclick=()=>{
- $('adminModal').classList.remove('show');
-};
+$('adminClose').onclick=()=>$('adminModal').classList.remove('show');
 
 $('watchClose').onclick=()=>{
  $('watchModal').classList.remove('show');
@@ -551,12 +486,6 @@ $('watchClose').onclick=()=>{
 $('loginBtn').onclick=async()=>{
  const msg=$('loginMsg');
  msg.textContent='';
-
- if($('adminCode').value!==ADMIN_CODE){
-  msg.textContent='Incorrect admin code.';
-  return;
- }
-
  try{
   await signInWithEmailAndPassword(
    auth,
@@ -571,34 +500,25 @@ $('loginBtn').onclick=async()=>{
 
 onAuthStateChanged(auth,user=>{
  isAdmin=!!user;
-
  $('loginArea').classList.toggle('hidden',isAdmin);
  $('panelArea').classList.toggle('hidden',!isAdmin);
-
  if(isAdmin)renderAdmin();
 });
 
 /* Wikipedia auto search */
 $('autoFetchBtn').onclick=async()=>{
  const searchText=$('itemTitle').value.trim();
-
  if(!searchText){
   $('autoStatus').textContent='Please enter a movie or web series name.';
   return;
  }
-
  $('autoStatus').textContent='Searching details...';
  $('autoResults').innerHTML='';
 
  try{
-  const searchUrl=
-   'https://en.wikipedia.org/w/rest.php/v1/search/page?q='+
-   encodeURIComponent(searchText)+'&limit=8';
-
+  const searchUrl='https://en.wikipedia.org/w/rest.php/v1/search/page?q='+encodeURIComponent(searchText)+'&limit=8';
   const response=await fetch(searchUrl);
-
   if(!response.ok)throw new Error('Search service unavailable');
-
   const data=await response.json();
   const pages=data.pages||[];
 
@@ -612,7 +532,6 @@ $('autoFetchBtn').onclick=async()=>{
   pages.forEach(page=>{
    const result=document.createElement('div');
    result.className='auto-result';
-
    const img=document.createElement('img');
    img.alt='';
    img.src=page.thumbnail?.url||'';
@@ -621,40 +540,25 @@ $('autoFetchBtn').onclick=async()=>{
 
    const details=document.createElement('div');
    details.className='details';
-
    const title=document.createElement('h4');
    title.textContent=page.title||'Untitled';
-
    const desc=document.createElement('p');
    desc.textContent=page.description||page.excerpt||'No description available.';
-
    const choose=document.createElement('button');
    choose.className='red';
    choose.textContent='Use this result';
 
    choose.onclick=async()=>{
     $('autoStatus').textContent='Loading selected details...';
-
     try{
-     const summaryUrl=
-      'https://en.wikipedia.org/api/rest_v1/page/summary/'+
-      encodeURIComponent(page.key||page.title);
-
+     const summaryUrl='https://en.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(page.key||page.title);
      const summaryResponse=await fetch(summaryUrl);
      if(!summaryResponse.ok)throw new Error('Details not available');
-
      const summary=await summaryResponse.json();
-
      $('itemTitle').value=summary.title||page.title||'';
      $('itemDescription').value=summary.extract||page.excerpt||'';
-
-     const poster=
-      summary.originalimage?.source||
-      summary.thumbnail?.source||
-      page.thumbnail?.url||'';
-
+     const poster=summary.originalimage?.source||summary.thumbnail?.source||page.thumbnail?.url||'';
      if(poster)$('itemPoster').value=poster;
-
      $('autoStatus').textContent='Details filled. Add an authorized video URL and save.';
     }catch(error){
      $('autoStatus').textContent='Could not load full details. You can enter them manually.';
@@ -665,7 +569,6 @@ $('autoFetchBtn').onclick=async()=>{
    result.append(img,details);
    $('autoResults').append(result);
   });
-
  }catch(error){
   $('autoStatus').textContent='Search failed. Please try again later.';
   console.error(error);
@@ -677,6 +580,7 @@ $('clearAutoBtn').onclick=()=>{
  $('autoStatus').textContent='Enter a movie or web series name, then search.';
 };
 
+/* Save content */
 $('saveItem').onclick=async()=>{
  const title=$('itemTitle').value.trim();
  const category=$('itemCategory').value;
@@ -684,16 +588,8 @@ $('saveItem').onclick=async()=>{
  const url=safeUrl($('itemUrl').value.trim());
  const description=$('itemDescription').value.trim();
 
- if(!title){
-  $('saveMsg').textContent='Please enter a title.';
-  return;
- }
-
- if(!url){
-  $('saveMsg').textContent='Please enter a valid video or stream URL.';
-  return;
- }
-
+ if(!title){$('saveMsg').textContent='Please enter a title.';return}
+ if(!url){$('saveMsg').textContent='Please enter a valid video or stream URL.';return}
  if(!isAdmin||!auth.currentUser){
   $('saveMsg').textContent='Please sign in as admin first.';
   return;
@@ -704,14 +600,9 @@ $('saveItem').onclick=async()=>{
 
  try{
   await addDoc(collection(db,'content'),{
-   title,
-   category,
-   poster,
-   url,
-   description,
+   title,category,poster,url,description,
    createdAt:serverTimestamp()
   });
-
   $('saveMsg').textContent='Content saved successfully.';
   $('itemTitle').value='';
   $('itemPoster').value='';
@@ -736,11 +627,10 @@ $('logoutBtn').onclick=async()=>{
  }
 };
 
-/* Close modals by tapping outside their boxes */
+/* Close modals by tapping outside */
 $('adminModal').addEventListener('click',e=>{
  if(e.target===$('adminModal'))$('adminModal').classList.remove('show');
 });
-
 $('watchModal').addEventListener('click',e=>{
  if(e.target===$('watchModal')){
   $('watchModal').classList.remove('show');
