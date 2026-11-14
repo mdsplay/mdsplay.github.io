@@ -21,7 +21,7 @@ button:hover{filter:brightness(.88)}
 .secondary{background:#333;color:#fff}
 .red{background:var(--red);color:#fff}
 header{min-height:68px;position:sticky;top:0;z-index:8;display:flex;align-items:center;gap:28px;padding:10px 4.5%;background:#080808f2}
-.brand{font-size:29px;letter-spacing:-1.5px;font-weight:900;color:var(--red);white-space:nowrap;cursor:default;user-select:none}
+.brand{font-size:29px;letter-spacing:-1.5px;font-weight:900;color:var(--red);white-space:nowrap;cursor:pointer;user-select:none}
 .nav{display:flex;align-items:center;gap:20px;flex:1;flex-wrap:wrap}
 .nav button{padding:5px 0;background:transparent;color:#ddd;font-weight:500}
 .nav button.active,.nav button:hover{color:#fff;font-weight:800}
@@ -146,7 +146,6 @@ footer{border-top:1px solid #292929;padding:25px 5%;color:#777;font-size:12px;te
 
 <footer>© <span id="year"></span> MDSPLAY. Content is provided by its respective rights holders.</footer>
 
-<!-- ADMIN MODAL: opened through hidden logo gesture -->
 <div class="modal" id="adminModal">
  <div class="box">
   <div class="box-top"><h2>Admin access</h2><button class="secondary" id="adminClose">Close</button></div>
@@ -248,7 +247,7 @@ const app=initializeApp(firebaseConfig);
 const db=getFirestore(app);
 const auth=getAuth(app);
 
-// Extra client-side check only. Firestore rules must protect writes.
+// This is an extra client-side check, not the main security boundary.
 const ADMIN_CODE='Vision';
 
 let items=[];
@@ -274,7 +273,6 @@ let logoTimer=null;
 $('brandSecret').addEventListener('click',()=>{
  logoClicks++;
  clearTimeout(logoTimer);
-
  logoTimer=setTimeout(()=>{logoClicks=0},2500);
 
  if(logoClicks>=5){
@@ -512,7 +510,11 @@ onSnapshot(
   if(isAdmin)renderAdmin();
  },
  err=>{
-  $('allCatalog').innerHTML='<div class="empty">Could not load content. Check Firestore rules.</div>';
+  $('allCatalog').innerHTML='';
+  const msg=document.createElement('div');
+  msg.className='empty';
+  msg.textContent='Could not load content. Check Firestore rules.';
+  $('allCatalog').append(msg);
   console.error(err);
  }
 );
@@ -605,117 +607,146 @@ $('autoFetchBtn').onclick=async()=>{
    return;
   }
 
-  $('autoStatus').textContent='Select the correct result:';
+  $('autoStatus').textContent='Choose the correct result below.';
 
   pages.forEach(page=>{
    const result=document.createElement('div');
    result.className='auto-result';
 
    const img=document.createElement('img');
-   img.alt=page.title;
+   img.alt='';
    img.src=page.thumbnail?.url||'';
-   if(!page.thumbnail?.url)img.style.display='none';
+   if(!img.src)img.style.display='none';
+   img.onerror=()=>{img.style.display='none'};
 
    const details=document.createElement('div');
    details.className='details';
 
-   const heading=document.createElement('h4');
-   heading.textContent=page.title;
+   const title=document.createElement('h4');
+   title.textContent=page.title||'Untitled';
 
-   const description=document.createElement('p');
-   description.textContent=page.description||'Description unavailable';
+   const desc=document.createElement('p');
+   desc.textContent=page.description||page.excerpt||'No description available.';
 
-   const apply=document.createElement('button');
-   apply.className='red';
-   apply.textContent='Use This';
+   const choose=document.createElement('button');
+   choose.className='red';
+   choose.textContent='Use this result';
 
-   apply.onclick=async()=>{
+   choose.onclick=async()=>{
+    $('autoStatus').textContent='Loading selected details...';
+
     try{
-     $('autoStatus').textContent='Loading selected details...';
-
      const summaryUrl=
       'https://en.wikipedia.org/api/rest_v1/page/summary/'+
-      encodeURIComponent(page.title.replace(/ /g,'_'));
+      encodeURIComponent(page.key||page.title);
 
      const summaryResponse=await fetch(summaryUrl);
+     if(!summaryResponse.ok)throw new Error('Details not available');
 
-     if(!summaryResponse.ok)throw new Error('Details unavailable');
+     const summary=await summaryResponse.json();
 
-     const info=await summaryResponse.json();
-
-     $('itemTitle').value=info.title||page.title;
+     $('itemTitle').value=summary.title||page.title||'';
+     $('itemDescription').value=summary.extract||page.excerpt||'';
 
      const poster=
-      info.originalimage?.source||
-      info.thumbnail?.source||
+      summary.originalimage?.source||
+      summary.thumbnail?.source||
       page.thumbnail?.url||'';
 
-     $('itemPoster').value=safeUrl(poster);
+     if(poster)$('itemPoster').value=poster;
 
-     $('itemDescription').value=
-      info.extract||page.description||'';
-
-     $('autoStatus').textContent=
-      'Details filled. Review them before saving.';
-
-     $('autoResults').innerHTML='';
+     $('autoStatus').textContent='Details filled. Add an authorized video URL and save.';
     }catch(error){
-     $('autoStatus').textContent='Could not load details: '+error.message;
+     $('autoStatus').textContent='Could not load full details. You can enter them manually.';
     }
    };
 
-   details.append(heading,description,apply);
+   details.append(title,desc,choose);
    result.append(img,details);
    $('autoResults').append(result);
   });
 
  }catch(error){
-  $('autoStatus').textContent='Search failed. Check internet and try again.';
+  $('autoStatus').textContent='Search failed. Please try again later.';
   console.error(error);
  }
 };
 
 $('clearAutoBtn').onclick=()=>{
  $('autoResults').innerHTML='';
- $('autoStatus').textContent='Search results cleared.';
+ $('autoStatus').textContent='Enter a movie or web series name, then search.';
 };
 
-/* Save content */
 $('saveItem').onclick=async()=>{
  const title=$('itemTitle').value.trim();
+ const category=$('itemCategory').value;
+ const poster=safeUrl($('itemPoster').value.trim());
  const url=safeUrl($('itemUrl').value.trim());
+ const description=$('itemDescription').value.trim();
 
- if(!title||!url){
-  $('saveMsg').textContent='Title and a valid URL are required.';
+ if(!title){
+  $('saveMsg').textContent='Please enter a title.';
   return;
  }
+
+ if(!url){
+  $('saveMsg').textContent='Please enter a valid video or stream URL.';
+  return;
+ }
+
+ if(!isAdmin||!auth.currentUser){
+  $('saveMsg').textContent='Please sign in as admin first.';
+  return;
+ }
+
+ $('saveItem').disabled=true;
+ $('saveMsg').textContent='Saving content...';
 
  try{
   await addDoc(collection(db,'content'),{
    title,
-   category:$('itemCategory').value,
-   poster:safeUrl($('itemPoster').value.trim()),
+   category,
+   poster,
    url,
-   description:$('itemDescription').value.trim(),
+   description,
    createdAt:serverTimestamp()
   });
 
   $('saveMsg').textContent='Content saved successfully.';
-
-  ['itemTitle','itemPoster','itemUrl','itemDescription'].forEach(id=>$(id).value='');
-
+  $('itemTitle').value='';
+  $('itemPoster').value='';
+  $('itemUrl').value='';
+  $('itemDescription').value='';
   $('autoResults').innerHTML='';
-  $('autoStatus').textContent='Ready for next content.';
- }catch(e){
-  $('saveMsg').textContent='Could not save: '+e.message;
+  $('autoStatus').textContent='Enter a movie or web series name, then search.';
+ }catch(error){
+  $('saveMsg').textContent='Save failed: '+error.message;
+ }finally{
+  $('saveItem').disabled=false;
  }
 };
 
 $('logoutBtn').onclick=async()=>{
- await signOut(auth);
- $('adminModal').classList.remove('show');
+ try{
+  await signOut(auth);
+  $('loginMsg').textContent='';
+  $('saveMsg').textContent='Signed out.';
+ }catch(error){
+  $('saveMsg').textContent='Sign out failed: '+error.message;
+ }
 };
 
+/* Close modals by tapping outside their boxes */
+$('adminModal').addEventListener('click',e=>{
+ if(e.target===$('adminModal'))$('adminModal').classList.remove('show');
+});
+
+$('watchModal').addEventListener('click',e=>{
+ if(e.target===$('watchModal')){
+  $('watchModal').classList.remove('show');
+  stopPlayer();
+ }
+});
 </script>
 </body>
 </html>
