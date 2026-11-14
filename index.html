@@ -8,6 +8,7 @@
 <title>MDSPLAY | Stream Anything</title>
 <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17"></script>
 <script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
+
 <style>
 :root{--bg:#080808;--red:#e50914;--text:#fff;--muted:#aaa}
 *{box-sizing:border-box}
@@ -58,7 +59,6 @@ main{margin-top:-42px;position:relative;z-index:2;padding-bottom:50px}
 .filters{display:flex;gap:9px;flex-wrap:wrap;margin:0 4.5% 24px}
 .filters select{background:#171717;color:#fff;border:1px solid #444;padding:9px 12px;border-radius:5px;min-width:120px}
 .filters button{background:#292929;color:#fff}
-.pill{font-size:10px;color:#fff;background:#8d151b;padding:3px 6px;border-radius:3px;display:inline-block;margin-bottom:5px}
 footer{border-top:1px solid #292929;padding:25px 5%;color:#777;font-size:12px;text-align:center}
 .modal{position:fixed;inset:0;background:#000d;display:none;place-items:center;padding:15px;z-index:20}
 .modal.show{display:grid}
@@ -147,47 +147,38 @@ main{margin-top:-30px}
   <div class="section-head"><h2>Continue Watching</h2></div>
   <div id="continueCatalog" class="shelf"><div class="empty">Your watch progress will appear here.</div></div>
  </section>
-
  <section class="section" id="watchlistSection">
   <div class="section-head"><h2>My Watchlist</h2></div>
   <div id="watchlistCatalog" class="shelf"><div class="empty">Add titles to your watchlist.</div></div>
  </section>
-
  <section class="section" id="trendingSection">
   <div class="section-head"><h2>Trending on This Device</h2></div>
   <div id="trendingCatalog" class="shelf"><div class="empty">Watch activity will appear here.</div></div>
  </section>
-
  <section class="section" id="popularSection">
   <div class="section-head"><h2>Popular on This Device</h2></div>
   <div id="popularCatalog" class="shelf"><div class="empty">Your viewing activity will help build this list.</div></div>
  </section>
-
  <section class="section" id="recentSection">
   <div class="section-head"><h2>Recently Added</h2></div>
   <div id="recentCatalog" class="shelf"><div class="empty">Recently added titles will appear here.</div></div>
  </section>
-
  <section class="section" id="liveSection">
   <div class="section-head"><h2>Live TV Channels</h2></div>
   <div id="liveCatalog" class="shelf live-shelf"><div class="empty">Loading channels…</div></div>
  </section>
-
  <section class="section" id="movieSection">
   <div class="section-head"><h2>Movies</h2></div>
   <div id="movieCatalog" class="shelf"><div class="empty">Loading movies…</div></div>
  </section>
-
  <section class="section" id="seriesSection">
   <div class="section-head"><h2>Web Series & Shows</h2></div>
   <div id="seriesCatalog" class="shelf"><div class="empty">Loading shows…</div></div>
  </section>
-
  <section class="section" id="allSection">
   <div class="section-head"><h2>Explore All</h2></div>
   <div id="allCatalog" class="shelf"><div class="empty">Loading content…</div></div>
  </section>
-
  <section class="section" id="historySection">
   <div class="section-head"><h2>Watch History</h2><button class="secondary" id="clearHistory">Clear History</button></div>
   <div id="historyCatalog" class="shelf"><div class="empty">Your watch history will appear here.</div></div>
@@ -221,9 +212,7 @@ main{margin-top:-30px}
     <div class="field"><label>Category</label>
      <select id="itemCategory"><option>Live TV</option><option>Movie</option><option>Web Series</option></select>
     </div>
-    <div class="field"><label>Genre</label>
-     <input id="itemGenre" placeholder="Action, Drama, Comedy">
-    </div>
+    <div class="field"><label>Genre</label><input id="itemGenre" placeholder="Action, Drama, Comedy"></div>
    </div>
    <div class="row">
     <div class="field"><label>Language</label><input id="itemLanguage" placeholder="Hindi, English, Tamil"></div>
@@ -255,7 +244,6 @@ main{margin-top:-30px}
 <script>
 document.getElementById('year').textContent=new Date().getFullYear();
 
-/* Admin icon: triple tap within two seconds */
 let adminTaps=0,adminTapTimer=null;
 document.getElementById('adminDot').addEventListener('click',()=>{
  adminTaps++;
@@ -328,14 +316,16 @@ function toggleWatchlist(x){
  render();
 }
 function recordView(x){
- const history=getHistory();
- history[x.id]={id:x.id,title:x.title||'',category:x.category||'',watchedAt:Date.now()};
- writeStore(STORAGE.history,history);
- const views=getViews();
- views[x.id]=(views[x.id]||0)+1;
- writeStore(STORAGE.views,views);
- renderPersonalSections();
- renderDiscoverySections();
+ try{
+  const history=getHistory();
+  history[x.id]={id:x.id,title:x.title||'',category:x.category||'',watchedAt:Date.now()};
+  writeStore(STORAGE.history,history);
+  const views=getViews();
+  views[x.id]=(views[x.id]||0)+1;
+  writeStore(STORAGE.views,views);
+  renderPersonalSections();
+  renderDiscoverySections();
+ }catch(e){console.warn('Could not save viewing history:',e)}
 }
 
 function makeCard(x,live=false){
@@ -359,10 +349,12 @@ function makeCard(x,live=false){
  category.textContent=live?'LIVE CHANNEL':(x.category||'Content').toUpperCase();
  const meta=document.createElement('p');
  meta.textContent=[x.genre,x.language,x.year].filter(Boolean).join(' · ');
+
  const open=document.createElement('button');
  open.className='card-open';
  open.textContent=live?'▶ Watch':'▶ Play';
  open.onclick=e=>{e.stopPropagation();watch(x)};
+
  const actions=document.createElement('div');
  actions.className='card-actions';
  const save=document.createElement('button');
@@ -370,6 +362,7 @@ function makeCard(x,live=false){
  save.className=isSaved(x.id)?'saved':'';
  save.onclick=e=>{e.stopPropagation();toggleWatchlist(x)};
  actions.append(save);
+
  info.append(title,category);
  if(meta.textContent)info.append(meta);
  info.append(open,actions);
@@ -379,11 +372,14 @@ function makeCard(x,live=false){
 }
 
 function fillShelf(id,list,live=false){
- const el=$(id);el.innerHTML='';
+ const el=$(id);
+ el.innerHTML='';
  if(!list.length){
   const empty=document.createElement('div');
-  empty.className='empty';empty.textContent='Nothing here yet.';
-  el.append(empty);return;
+  empty.className='empty';
+  empty.textContent='Nothing here yet.';
+  el.append(empty);
+  return;
  }
  list.forEach(x=>el.append(makeCard(x,live)));
 }
@@ -416,7 +412,8 @@ function populateFilters(){
   const first=document.createElement('option');
   first.value='';first.textContent=label;el.append(first);
   [...values].sort(sortFn).forEach(v=>{
-   const o=document.createElement('option');o.value=v;o.textContent=v;el.append(o);
+   const o=document.createElement('option');
+   o.value=v;o.textContent=v;el.append(o);
   });
   if([...el.options].some(o=>o.value===old))el.value=old;
  };
@@ -437,6 +434,7 @@ function renderPersonalSections(){
  const watchlist=getWatchlist();
  const history=getHistory();
  const progress=getProgress();
+
  const continueItems=Object.values(progress)
   .filter(p=>p.position>5&&p.duration>0&&p.position<p.duration-15)
   .sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0))
@@ -458,14 +456,20 @@ function renderPersonalSections(){
 function renderDiscoverySections(){
  const views=getViews();
  const history=getHistory();
+
  const recently=[...items].sort((a,b)=>{
   const ta=a.createdAt?.toMillis?a.createdAt.toMillis():0;
   const tb=b.createdAt?.toMillis?b.createdAt.toMillis():0;
   return tb-ta;
  }).slice(0,20);
 
- const trending=[...items].sort((a,b)=>(history[b.id]?.watchedAt||0)-(history[a.id]?.watchedAt||0)).filter(x=>history[x.id]).slice(0,20);
- const popular=[...items].sort((a,b)=>(views[b.id]||0)-(views[a.id]||0)).filter(x=>(views[x.id]||0)>0).slice(0,20);
+ const trending=[...items]
+  .sort((a,b)=>(history[b.id]?.watchedAt||0)-(history[a.id]?.watchedAt||0))
+  .filter(x=>history[x.id]).slice(0,20);
+
+ const popular=[...items]
+  .sort((a,b)=>(views[b.id]||0)-(views[a.id]||0))
+  .filter(x=>(views[x.id]||0)>0).slice(0,20);
 
  fillShelf('recentCatalog',recent);
  fillShelf('trendingCatalog',trending);
@@ -473,8 +477,14 @@ function renderDiscoverySections(){
 }
 
 function stopPlayer(){
- if(currentHls){currentHls.destroy();currentHls=null}
- if(currentDash){currentDash.reset();currentDash=null}
+ if(currentHls){
+  currentHls.destroy();
+  currentHls=null;
+ }
+ if(currentDash){
+  currentDash.reset();
+  currentDash=null;
+ }
  clearTimeout(progressSaveTimer);
  $('watchFrame').innerHTML='';
  currentItem=null;
@@ -491,6 +501,7 @@ function savePlayback(position,duration){
  };
  writeStore(STORAGE.progress,progress);
 }
+
 function addIframe(url){
  const frame=document.createElement('iframe');
  frame.src=url;
@@ -501,17 +512,34 @@ function addIframe(url){
 }
 
 function watch(x){
- stopPlayer();
- currentItem=x;
- recordView(x);
- $('watchTitle').textContent=x.title||'Watch';
- $('watchDescription').textContent=x.description||'';
- $('playerMsg').textContent='';
+ if(!x){
+  alert('Content not found.');
+  return;
+ }
+
+ // Show the modal before starting player work
  $('watchModal').classList.remove('fullscreen-mode');
  $('watchModal').classList.add('show');
+ $('watchTitle').textContent=x.title||'Watch';
+ $('watchDescription').textContent=x.description||'';
+ $('playerMsg').textContent='Preparing player...';
+
+ try{
+  stopPlayer();
+ }catch(error){
+  console.warn('Player cleanup issue:',error);
+  $('watchFrame').innerHTML='';
+  currentItem=null;
+ }
+ currentItem=x;
+
+ try{recordView(x)}catch(error){console.warn(error)}
 
  const url=safeUrl(x.url);
- if(!url){$('playerMsg').textContent='Invalid video URL.';return}
+ if(!url){
+  $('playerMsg').textContent='Invalid video URL. Please check the saved link.';
+  return;
+ }
 
  const isHls=/\.m3u8($|\?)/i.test(url);
  const isDash=/\.mpd($|\?)/i.test(url);
@@ -520,77 +548,122 @@ function watch(x){
  const isVimeo=/vimeo\.com/i.test(url);
 
  if(isYouTube||isVimeo){
-  let embed='';
   try{
    const u=new URL(url);
+   let embed='';
+
    if(isYouTube){
-    let id=u.hostname.includes('youtu.be')?u.pathname.slice(1):u.searchParams.get('v')||u.pathname.split('/').pop();
-    if(u.pathname.includes('/embed/'))id=u.pathname.split('/embed/')[1].split('/')[0];
-    embed='https://www.youtube.com/embed/'+encodeURIComponent(id);
+    let id=u.hostname.includes('youtu.be')
+     ?u.pathname.split('/').filter(Boolean)[0]
+     :u.searchParams.get('v');
+
+    if(!id&&u.pathname.includes('/embed/')){
+     id=u.pathname.split('/embed/')[1].split('/')[0];
+    }
+    if(!id&&u.pathname.includes('/shorts/')){
+     id=u.pathname.split('/shorts/')[1].split('/')[0];
+    }
+    if(id)embed='https://www.youtube.com/embed/'+encodeURIComponent(id);
    }else{
     const id=u.pathname.split('/').filter(Boolean).pop();
-    embed='https://player.vimeo.com/video/'+encodeURIComponent(id);
+    if(id)embed='https://player.vimeo.com/video/'+encodeURIComponent(id);
    }
-  }catch{}
-  if(!embed){$('playerMsg').textContent='Invalid embed URL.';return}
-  addIframe(embed);return;
+
+   if(!embed)throw new Error('Invalid video ID');
+   addIframe(embed);
+   $('playerMsg').textContent='If playback does not start, check whether embedding is allowed.';
+  }catch(error){
+   $('playerMsg').textContent='Invalid YouTube or Vimeo link.';
+   console.error(error);
+  }
+  return;
  }
 
  if(isHls||isDash||isDirect){
   const video=document.createElement('video');
-  video.controls=true;video.playsInline=true;video.preload='metadata';
+  video.controls=true;
+  video.playsInline=true;
+  video.preload='metadata';
   video.setAttribute('controlsList','nodownload');
   $('watchFrame').append(video);
 
-  const oldProgress=getProgress()[x.id];
+  video.onerror=()=>{
+   $('playerMsg').textContent='Video unavailable. The URL may be expired, blocked or unsupported.';
+  };
+
   video.addEventListener('loadedmetadata',()=>{
+   const oldProgress=getProgress()[x.id];
    if(oldProgress?.position>5&&oldProgress.position<video.duration-15){
     video.currentTime=oldProgress.position;
    }
+   $('playerMsg').textContent='Player ready. Press play to start.';
   });
+
   video.addEventListener('timeupdate',()=>{
    clearTimeout(progressSaveTimer);
-   progressSaveTimer=setTimeout(()=>savePlayback(video.currentTime,video.duration),1200);
+   progressSaveTimer=setTimeout(()=>{
+    savePlayback(video.currentTime,video.duration);
+   },1200);
   });
-  video.addEventListener('pause',()=>savePlayback(video.currentTime,video.duration));
+
+  video.addEventListener('pause',()=>{
+   savePlayback(video.currentTime,video.duration);
+  });
+
   video.addEventListener('ended',()=>{
-   const p=getProgress();delete p[x.id];writeStore(STORAGE.progress,p);
+   const progress=getProgress();
+   delete progress[x.id];
+   writeStore(STORAGE.progress,progress);
    renderPersonalSections();
   });
 
   if(isHls){
-   if(video.canPlayType('application/vnd.apple.mpegurl'))video.src=url;
-   else if(window.Hls&&Hls.isSupported()){
+   if(video.canPlayType('application/vnd.apple.mpegurl')){
+    video.src=url;
+   }else if(window.Hls&&Hls.isSupported()){
     currentHls=new Hls();
     currentHls.loadSource(url);
     currentHls.attachMedia(video);
     currentHls.on(Hls.Events.ERROR,(event,data)=>{
-     if(data.fatal)$('playerMsg').textContent='Stream unavailable. Check URL, expiry, CORS or access permission.';
+     if(data.fatal){
+      $('playerMsg').textContent='HLS stream unavailable. Check URL, CORS or access permission.';
+     }
     });
-   }else $('playerMsg').textContent='HLS is not supported in this browser.';
+   }else{
+    $('playerMsg').textContent='HLS is not supported in this browser.';
+   }
   }else if(isDash){
    if(window.dashjs){
     currentDash=dashjs.MediaPlayer().create();
     currentDash.initialize(video,url,false);
-    currentDash.on('error',()=>$('playerMsg').textContent='DASH stream unavailable or blocked.');
-   }else $('playerMsg').textContent='DASH player could not load.';
-  }else video.src=url;
+    currentDash.on('error',()=>{
+     $('playerMsg').textContent='DASH stream unavailable or blocked.';
+    });
+   }else{
+    $('playerMsg').textContent='DASH player could not load.';
+   }
+  }else{
+   video.src=url;
+  }
 
-  video.onerror=()=>$('playerMsg').textContent='Video unavailable. The link may be expired or blocked.';
   return;
  }
+
+ // Other links are opened as embedded websites.
  addIframe(url);
- $('playerMsg').textContent='Resume playback is available for direct video files. Embedded players may not expose playback position.';
+ $('playerMsg').textContent='This website must allow embedding for playback to work.';
 }
 
 async function enterFullscreen(){
  const target=$('watchFrame');
  try{
   if(!document.fullscreenElement)await target.requestFullscreen();
-  if(screen.orientation?.lock)await screen.orientation.lock('landscape').catch(()=>{});
+  if(screen.orientation?.lock){
+   await screen.orientation.lock('landscape').catch(()=>{});
+  }
  }catch(error){
   $('watchModal').classList.add('fullscreen-mode');
-  $('playerMsg').textContent='Browser fullscreen unavailable; using full-screen player view.';
+  $('playerMsg').textContent='Using full-screen player view.';
  }
 }
 
@@ -600,23 +673,34 @@ document.addEventListener('fullscreenchange',()=>{
   $('watchModal').classList.remove('fullscreen-mode');
  }
 });
+
 $('fullscreenBtn').onclick=enterFullscreen;
 
 function renderAdmin(){
  $('adminList').innerHTML='';
  items.forEach(x=>{
-  const r=document.createElement('div');r.className='adminrow';
+  const r=document.createElement('div');
+  r.className='adminrow';
+
   const t=document.createElement('span');
   t.textContent=(x.title||'Untitled')+' · '+(x.category||'');
+
   const b=document.createElement('button');
-  b.className='secondary';b.textContent='Delete';
+  b.className='secondary';
+  b.textContent='Delete';
+
   b.onclick=async()=>{
    if(confirm('Delete this content?')){
-    try{await deleteDoc(doc(db,'content',x.id))}
-    catch(e){$('saveMsg').textContent=e.message}
+    try{
+     await deleteDoc(doc(db,'content',x.id));
+    }catch(e){
+     $('saveMsg').textContent=e.message;
+    }
    }
   };
-  r.append(t,b);$('adminList').append(r);
+
+  r.append(t,b);
+  $('adminList').append(r);
  });
 }
 
@@ -630,12 +714,17 @@ onSnapshot(query(collection(db,'content'),orderBy('createdAt','desc')),snap=>{
 },err=>{
  $('allCatalog').innerHTML='';
  const msg=document.createElement('div');
- msg.className='empty';msg.textContent='Could not load content. Check Firestore rules.';
- $('allCatalog').append(msg);console.error(err);
+ msg.className='empty';
+ msg.textContent='Could not load content. Check Firestore rules.';
+ $('allCatalog').append(msg);
+ console.error(err);
 });
 
 $('searchInput').addEventListener('input',render);
-['genreFilter','languageFilter','yearFilter'].forEach(id=>$(id).addEventListener('change',render));
+['genreFilter','languageFilter','yearFilter'].forEach(id=>{
+ $(id).addEventListener('change',render);
+});
+
 $('clearFilters').onclick=()=>{
  $('genreFilter').value='';
  $('languageFilter').value='';
@@ -648,11 +737,13 @@ document.querySelectorAll('[data-filter]').forEach(b=>{
  b.onclick=()=>{
   document.querySelectorAll('[data-filter]').forEach(n=>n.classList.remove('active'));
   b.classList.add('active');
+
   const target=b.dataset.filter==='all'?'allSection':
    b.dataset.filter==='Live TV'?'liveSection':
    b.dataset.filter==='Movie'?'movieSection':
    b.dataset.filter==='Web Series'?'seriesSection':
    'watchlistSection';
+
   $(target).scrollIntoView({behavior:'smooth'});
  };
 });
@@ -661,25 +752,32 @@ $('browseBtn').onclick=()=>$('allSection').scrollIntoView({behavior:'smooth'});
 $('heroLiveBtn').onclick=()=>$('liveSection').scrollIntoView({behavior:'smooth'});
 $('adminClose').onclick=()=>$('adminModal').classList.remove('show');
 
-$('watchClose').onclick=()=>{
- if(currentItem){
-  const video=$('watchFrame').querySelector('video');
-  if(video)savePlayback(video.currentTime,video.duration);
+function closeWatch(){
+ const video=$('watchFrame').querySelector('video');
+ if(video){
+  try{savePlayback(video.currentTime,video.duration)}catch(e){}
  }
  $('watchModal').classList.remove('show');
  $('watchModal').classList.remove('fullscreen-mode');
- if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});
+ if(document.fullscreenElement){
+  document.exitFullscreen().catch(()=>{});
+ }
  screen.orientation?.unlock?.();
  stopPlayer();
  renderPersonalSections();
-};
+}
+
+$('watchClose').onclick=closeWatch;
 
 $('loginBtn').onclick=async()=>{
- const msg=$('loginMsg');msg.textContent='';
+ const msg=$('loginMsg');
+ msg.textContent='';
  try{
   await signInWithEmailAndPassword(auth,$('adminEmail').value.trim(),$('adminPassword').value);
   msg.textContent='';
- }catch(e){msg.textContent='Admin sign-in failed: '+e.message}
+ }catch(e){
+  msg.textContent='Admin sign-in failed: '+e.message;
+ }
 };
 
 onAuthStateChanged(auth,user=>{
@@ -691,43 +789,76 @@ onAuthStateChanged(auth,user=>{
 
 $('autoFetchBtn').onclick=async()=>{
  const searchText=$('itemTitle').value.trim();
- if(!searchText){$('autoStatus').textContent='Please enter a movie or web series name.';return}
+ if(!searchText){
+  $('autoStatus').textContent='Please enter a movie or web series name.';
+  return;
+ }
+
  $('autoStatus').textContent='Searching details...';
  $('autoResults').innerHTML='';
+
  try{
-  const response=await fetch('https://en.wikipedia.org/w/rest.php/v1/search/page?q='+encodeURIComponent(searchText)+'&limit=8');
+  const response=await fetch(
+   'https://en.wikipedia.org/w/rest.php/v1/search/page?q='+
+   encodeURIComponent(searchText)+'&limit=8'
+  );
+
   if(!response.ok)throw new Error('Search service unavailable');
+
   const data=await response.json();
   const pages=data.pages||[];
-  if(!pages.length){$('autoStatus').textContent='No results found. Try another name.';return}
+
+  if(!pages.length){
+   $('autoStatus').textContent='No results found. Try another name.';
+   return;
+  }
+
   $('autoStatus').textContent='Choose the correct result below.';
 
   pages.forEach(page=>{
-   const result=document.createElement('div');result.className='auto-result';
-   const img=document.createElement('img');img.alt='';
+   const result=document.createElement('div');
+   result.className='auto-result';
+
+   const img=document.createElement('img');
+   img.alt='';
    img.src=page.thumbnail?.url||'';
    if(!img.src)img.style.display='none';
    img.onerror=()=>{img.style.display='none'};
 
-   const details=document.createElement('div');details.className='details';
-   const title=document.createElement('h4');title.textContent=page.title||'Untitled';
-   const desc=document.createElement('p');desc.textContent=page.description||page.excerpt||'No description available.';
+   const details=document.createElement('div');
+   details.className='details';
+
+   const title=document.createElement('h4');
+   title.textContent=page.title||'Untitled';
+
+   const desc=document.createElement('p');
+   desc.textContent=page.description||page.excerpt||'No description available.';
+
    const choose=document.createElement('button');
-   choose.className='red';choose.textContent='Use this result';
+   choose.className='red';
+   choose.textContent='Use this result';
 
    choose.onclick=async()=>{
     $('autoStatus').textContent='Loading selected details...';
     try{
-     const summaryResponse=await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(page.key||page.title));
+     const summaryResponse=await fetch(
+      'https://en.wikipedia.org/api/rest_v1/page/summary/'+
+      encodeURIComponent(page.key||page.title)
+     );
      if(!summaryResponse.ok)throw new Error('Details not available');
+
      const summary=await summaryResponse.json();
      $('itemTitle').value=summary.title||page.title||'';
      $('itemDescription').value=summary.extract||page.excerpt||'';
-     const poster=summary.originalimage?.source||summary.thumbnail?.source||page.thumbnail?.url||'';
+
+     const poster=summary.originalimage?.source||
+      summary.thumbnail?.source||page.thumbnail?.url||'';
+
      if(poster)$('itemPoster').value=poster;
+
      $('autoStatus').textContent='Details filled. Add genre, language, year and an authorized video URL.';
     }catch(error){
-     $('autoStatus').textContent='Could not load full details. You can enter them manually.';
+     $('autoStatus').textContent='Could not load full details. Enter them manually.';
     }
    };
 
@@ -756,23 +887,39 @@ $('saveItem').onclick=async()=>{
  const url=safeUrl($('itemUrl').value.trim());
  const description=$('itemDescription').value.trim();
 
- if(!title){$('saveMsg').textContent='Please enter a title.';return}
- if(!url){$('saveMsg').textContent='Please enter a valid video or stream URL.';return}
- if(!isAdmin||!auth.currentUser){$('saveMsg').textContent='Please sign in as admin first.';return}
+ if(!title){
+  $('saveMsg').textContent='Please enter a title.';
+  return;
+ }
+ if(!url){
+  $('saveMsg').textContent='Please enter a valid video or stream URL.';
+  return;
+ }
+ if(!isAdmin||!auth.currentUser){
+  $('saveMsg').textContent='Please sign in as admin first.';
+  return;
+ }
 
  $('saveItem').disabled=true;
  $('saveMsg').textContent='Saving content...';
+
  try{
   await addDoc(collection(db,'content'),{
-   title,category,genre,language,year,poster,url,description,createdAt:serverTimestamp()
+   title,category,genre,language,year,poster,url,description,
+   createdAt:serverTimestamp()
   });
+
   $('saveMsg').textContent='Content saved successfully.';
-  ['itemTitle','itemGenre','itemLanguage','itemYear','itemPoster','itemUrl','itemDescription'].forEach(id=>$(id).value='');
+  ['itemTitle','itemGenre','itemLanguage','itemYear','itemPoster','itemUrl','itemDescription'].forEach(id=>{
+   $(id).value='';
+  });
   $('autoResults').innerHTML='';
   $('autoStatus').textContent='Enter a movie or web series name, then search.';
  }catch(error){
   $('saveMsg').textContent='Save failed: '+error.message;
- }finally{$('saveItem').disabled=false}
+ }finally{
+  $('saveItem').disabled=false;
+ }
 };
 
 $('logoutBtn').onclick=async()=>{
@@ -780,7 +927,9 @@ $('logoutBtn').onclick=async()=>{
   await signOut(auth);
   $('loginMsg').textContent='';
   $('saveMsg').textContent='Signed out.';
- }catch(error){$('saveMsg').textContent='Sign out failed: '+error.message}
+ }catch(error){
+  $('saveMsg').textContent='Sign out failed: '+error.message;
+ }
 };
 
 $('clearHistory').onclick=()=>{
@@ -793,16 +942,13 @@ $('clearHistory').onclick=()=>{
 };
 
 $('adminModal').addEventListener('click',e=>{
- if(e.target===$('adminModal'))$('adminModal').classList.remove('show');
-});
-$('watchModal').addEventListener('click',e=>{
- if(e.target===$('watchModal')){
-  const video=$('watchFrame').querySelector('video');
-  if(video)savePlayback(video.currentTime,video.duration);
-  $('watchModal').classList.remove('show');
-  stopPlayer();
-  renderPersonalSections();
+ if(e.target===$('adminModal')){
+  $('adminModal').classList.remove('show');
  }
+});
+
+$('watchModal').addEventListener('click',e=>{
+ if(e.target===$('watchModal'))closeWatch();
 });
 </script>
 </body>
