@@ -6,28 +6,29 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#080808">
 <title>MDSPLAY | Stream Anything</title>
+
 <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17"></script>
 <script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
+
 <style>
-:root{--bg:#080808;--red:#e50914;--text:#fff;--muted:#b3b3b3}
+:root{--bg:#080808;--red:#e50914;--text:#fff;--muted:#aaa}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 Arial,system-ui,sans-serif}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 Arial,sans-serif}
 button,input,select,textarea{font:inherit}
 button{border:0;border-radius:5px;padding:10px 17px;background:#fff;color:#111;font-weight:700;cursor:pointer}
 button:hover{filter:brightness(.88)}
 .secondary{background:#333;color:#fff}
 .red{background:var(--red);color:#fff}
-header{height:68px;position:sticky;top:0;z-index:8;display:flex;align-items:center;gap:28px;padding:0 4.5%;background:linear-gradient(180deg,#050505 0%,rgba(5,5,5,.94) 72%,rgba(5,5,5,.72) 100%)}
-.brand{font-size:29px;letter-spacing:-1.5px;font-weight:900;color:var(--red);white-space:nowrap}
-.brand span{color:#fff}
+header{min-height:68px;position:sticky;top:0;z-index:8;display:flex;align-items:center;gap:28px;padding:10px 4.5%;background:#080808f2}
+.brand{font-size:29px;letter-spacing:-1.5px;font-weight:900;color:var(--red);white-space:nowrap;cursor:default;user-select:none}
 .nav{display:flex;align-items:center;gap:20px;flex:1;flex-wrap:wrap}
-.nav button{padding:5px 0;background:transparent;color:#e5e5e5;font-weight:500}
+.nav button{padding:5px 0;background:transparent;color:#ddd;font-weight:500}
 .nav button.active,.nav button:hover{color:#fff;font-weight:800}
 .header-actions{display:flex;align-items:center;gap:10px}
 .search{width:min(190px,26vw);background:#111;border:1px solid #555;color:#fff;padding:9px 11px;border-radius:4px}
-.hero{min-height:440px;position:relative;display:flex;align-items:center;padding:55px 5% 80px;background:linear-gradient(90deg,#080808 0%,rgba(8,8,8,.88) 28%,rgba(8,8,8,.28) 70%,rgba(8,8,8,.15)),linear-gradient(0deg,#080808 0%,transparent 45%),radial-gradient(ellipse at 72% 35%,#6d1720 0%,#2a1118 27%,#111 62%)}
-.hero-content{max-width:590px;position:relative;z-index:1}
+.hero{min-height:440px;display:flex;align-items:center;padding:55px 5% 80px;background:linear-gradient(90deg,#080808 0%,#080808dd 28%,#08080847 70%),linear-gradient(0deg,#080808 0%,transparent 45%),radial-gradient(ellipse at 72% 35%,#6d1720,#2a1118 27%,#111 62%)}
+.hero-content{max-width:590px}
 .kicker{color:#ddd;text-transform:uppercase;font-size:12px;font-weight:800;letter-spacing:3px}
 .hero h1{font-size:clamp(38px,6vw,68px);line-height:.98;margin:13px 0 16px;letter-spacing:-2px}
 .hero p{color:#eee;max-width:510px;font-size:17px;line-height:1.55;margin:0 0 22px}
@@ -39,7 +40,7 @@ main{margin-top:-42px;position:relative;z-index:2;padding-bottom:50px}
 .section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .section h2{font-size:21px;margin:0;font-weight:800}
 .shelf{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(145px,16.5%);gap:10px;overflow-x:auto;padding:4px 2px 14px;scrollbar-width:thin;scrollbar-color:#555 transparent}
-.card{position:relative;min-width:0;border-radius:5px;overflow:hidden;background:#202020;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease}
+.card{position:relative;min-width:0;border-radius:5px;overflow:hidden;background:#202020;cursor:pointer;transition:transform .2s,box-shadow .2s}
 .card:hover{transform:scale(1.045);z-index:2;box-shadow:0 10px 25px #000b}
 .poster{width:100%;aspect-ratio:2/3;display:grid;place-items:center;background:linear-gradient(145deg,#353535,#111);color:#aaa;font-size:38px;overflow:hidden}
 .poster img{width:100%;height:100%;object-fit:cover;display:block}
@@ -70,14 +71,21 @@ footer{border-top:1px solid #292929;padding:25px 5%;color:#777;font-size:12px;te
 .adminlist{display:grid;gap:8px}
 .adminrow{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#252525;padding:10px;border-radius:4px}
 .adminrow span{overflow-wrap:anywhere}
+.auto-results{display:grid;gap:10px;margin:12px 0}
+.auto-result{display:flex;gap:12px;align-items:center;background:#292929;padding:10px;border-radius:6px}
+.auto-result img{width:65px;height:95px;object-fit:cover;border-radius:4px}
+.auto-result .details{flex:1;min-width:0}
+.auto-result h4{margin:0 0 5px}
+.auto-result p{font-size:12px;color:#bbb;margin:0 0 8px}
+.auto-status{font-size:12px;color:#bbb;margin:8px 0}
 @media(max-width:760px){
- header{height:auto;min-height:62px;padding:12px 4%;gap:10px;flex-wrap:wrap}
+ header{min-height:62px;padding:12px 4%;gap:10px;flex-wrap:wrap}
  .brand{font-size:25px}
  .nav{order:3;width:100%;gap:17px;overflow-x:auto;flex-wrap:nowrap}
  .nav button{white-space:nowrap;font-size:13px}
  .header-actions{margin-left:auto}
  .search{width:110px}
- .hero{min-height:390px;padding:42px 5% 75px;background:linear-gradient(90deg,#080808 0%,rgba(8,8,8,.82) 48%,rgba(8,8,8,.35)),linear-gradient(0deg,#080808 0%,transparent 55%),radial-gradient(ellipse at 78% 35%,#6d1720,#191014 55%,#111)}
+ .hero{min-height:390px;padding:42px 5% 75px;background:linear-gradient(90deg,#080808 0%,#080808d1 48%,#08080859),linear-gradient(0deg,#080808 0%,transparent 55%),radial-gradient(ellipse at 78% 35%,#6d1720,#191014 55%,#111)}
  .hero p{font-size:14px}
  .shelf{grid-auto-columns:minmax(125px,38%)}
  .live-shelf{grid-auto-columns:minmax(155px,48%)}
@@ -86,9 +94,11 @@ footer{border-top:1px solid #292929;padding:25px 5%;color:#777;font-size:12px;te
 }
 </style>
 </head>
+
 <body>
+
 <header>
- <div class="brand">MDSPLAY</div>
+ <div class="brand" id="brandSecret" title="MDSPLAY">MDSPLAY</div>
  <nav class="nav">
   <button class="active" data-filter="all">Home</button>
   <button data-filter="Movie">Movies</button>
@@ -97,7 +107,6 @@ footer{border-top:1px solid #292929;padding:25px 5%;color:#777;font-size:12px;te
  </nav>
  <div class="header-actions">
   <input class="search" id="searchInput" type="search" placeholder="Search">
-  <button id="adminOpen" class="secondary">Admin</button>
  </div>
 </header>
 
@@ -118,14 +127,17 @@ footer{border-top:1px solid #292929;padding:25px 5%;color:#777;font-size:12px;te
   <div class="section-head"><h2>Live TV Channels</h2></div>
   <div id="liveCatalog" class="shelf live-shelf"><div class="empty">Loading channels…</div></div>
  </section>
+
  <section class="section" id="movieSection">
   <div class="section-head"><h2>Movies</h2></div>
   <div id="movieCatalog" class="shelf"><div class="empty">Loading movies…</div></div>
  </section>
+
  <section class="section" id="seriesSection">
   <div class="section-head"><h2>Web Series & Shows</h2></div>
   <div id="seriesCatalog" class="shelf"><div class="empty">Loading shows…</div></div>
  </section>
+
  <section class="section" id="allSection">
   <div class="section-head"><h2>Explore All</h2></div>
   <div id="allCatalog" class="shelf"><div class="empty">Loading content…</div></div>
@@ -134,9 +146,11 @@ footer{border-top:1px solid #292929;padding:25px 5%;color:#777;font-size:12px;te
 
 <footer>© <span id="year"></span> MDSPLAY. Content is provided by its respective rights holders.</footer>
 
+<!-- ADMIN MODAL: opened through hidden logo gesture -->
 <div class="modal" id="adminModal">
  <div class="box">
   <div class="box-top"><h2>Admin access</h2><button class="secondary" id="adminClose">Close</button></div>
+
   <div id="loginArea">
    <p class="note">Administrator sign-in</p>
    <div class="field"><label>Admin email</label><input id="adminEmail" type="email" autocomplete="username"></div>
@@ -148,17 +162,51 @@ footer{border-top:1px solid #292929;padding:25px 5%;color:#777;font-size:12px;te
 
   <div id="panelArea" class="hidden">
    <h3>Add content</h3>
-   <div class="field"><label>Title</label><input id="itemTitle" placeholder="Movie or channel name"></div>
-   <div class="row">
-    <div class="field"><label>Category</label><select id="itemCategory"><option>Live TV</option><option>Movie</option><option>Web Series</option></select></div>
-    <div class="field"><label>Poster / channel logo URL</label><input id="itemPoster" placeholder="https://..."></div>
+
+   <div class="field">
+    <label>Movie / Web Series Name</label>
+    <input id="itemTitle" placeholder="Example: Inception">
    </div>
-   <div class="field"><label>Video / Stream / Embed URL</label><input id="itemUrl" placeholder="Paste an authorized URL" type="url"></div>
+
+   <div class="row">
+    <button type="button" class="red" id="autoFetchBtn">✨ Auto Find Details</button>
+    <button type="button" class="secondary" id="clearAutoBtn">Clear Results</button>
+   </div>
+
+   <p class="auto-status" id="autoStatus">Enter a movie or web series name, then search.</p>
+   <div id="autoResults" class="auto-results"></div>
+
+   <div class="row">
+    <div class="field">
+     <label>Category</label>
+     <select id="itemCategory">
+      <option>Live TV</option>
+      <option>Movie</option>
+      <option>Web Series</option>
+     </select>
+    </div>
+    <div class="field">
+     <label>Poster / channel logo URL</label>
+     <input id="itemPoster" placeholder="https://...">
+    </div>
+   </div>
+
+   <div class="field">
+    <label>Video / Stream / Embed URL</label>
+    <input id="itemUrl" placeholder="Paste an authorized URL" type="url">
+   </div>
+
    <p class="note">Supported: MP4, WebM, M3U8, MPD, YouTube, Vimeo and websites that permit embedding.</p>
-   <div class="field"><label>Description</label><textarea id="itemDescription"></textarea></div>
+
+   <div class="field">
+    <label>Description</label>
+    <textarea id="itemDescription"></textarea>
+   </div>
+
    <button class="red" id="saveItem">Save content</button>
    <button class="secondary" id="logoutBtn">Sign out</button>
    <p class="note" id="saveMsg"></p>
+
    <h3>Manage content</h3>
    <div id="adminList" class="adminlist"></div>
   </div>
@@ -176,10 +224,12 @@ footer{border-top:1px solid #292929;padding:25px 5%;color:#777;font-size:12px;te
 
 <script type="module">
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+
 import {
  getFirestore,collection,addDoc,deleteDoc,doc,
  onSnapshot,query,orderBy,serverTimestamp
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
 import {
  getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
@@ -198,7 +248,7 @@ const app=initializeApp(firebaseConfig);
 const db=getFirestore(app);
 const auth=getAuth(app);
 
-// Extra client-side check only. Firestore security rules must protect writes.
+// Extra client-side check only. Firestore rules must protect writes.
 const ADMIN_CODE='Vision';
 
 let items=[];
@@ -217,11 +267,29 @@ function safeUrl(value){
 
 $('year').textContent=new Date().getFullYear();
 
+/* Hidden admin entry: click MDSPLAY logo 5 times */
+let logoClicks=0;
+let logoTimer=null;
+
+$('brandSecret').addEventListener('click',()=>{
+ logoClicks++;
+ clearTimeout(logoTimer);
+
+ logoTimer=setTimeout(()=>{logoClicks=0},2500);
+
+ if(logoClicks>=5){
+  logoClicks=0;
+  $('adminModal').classList.add('show');
+ }
+});
+
 function makeCard(x,live=false){
  const card=document.createElement('article');
  card.className='card'+(live?' live-card':'');
+
  const poster=document.createElement('div');
  poster.className='poster';
+
  const src=safeUrl(x.poster);
 
  if(src){
@@ -433,7 +501,7 @@ function renderAdmin(){
 
   r.append(t,b);
   $('adminList').append(r);
- });
+ }
 }
 
 onSnapshot(
@@ -467,14 +535,17 @@ document.querySelectorAll('[data-filter]').forEach(b=>{
 
 $('browseBtn').onclick=()=>$('allSection').scrollIntoView({behavior:'smooth'});
 $('heroLiveBtn').onclick=()=>$('liveSection').scrollIntoView({behavior:'smooth'});
-$('adminOpen').onclick=()=>$('adminModal').classList.add('show');
-$('adminClose').onclick=()=>$('adminModal').classList.remove('show');
+
+$('adminClose').onclick=()=>{
+ $('adminModal').classList.remove('show');
+};
 
 $('watchClose').onclick=()=>{
  $('watchModal').classList.remove('show');
  stopPlayer();
 };
 
+/* Firebase admin login */
 $('loginBtn').onclick=async()=>{
  const msg=$('loginMsg');
  msg.textContent='';
@@ -498,11 +569,118 @@ $('loginBtn').onclick=async()=>{
 
 onAuthStateChanged(auth,user=>{
  isAdmin=!!user;
+
  $('loginArea').classList.toggle('hidden',isAdmin);
  $('panelArea').classList.toggle('hidden',!isAdmin);
+
  if(isAdmin)renderAdmin();
 });
 
+/* Wikipedia auto search */
+$('autoFetchBtn').onclick=async()=>{
+ const searchText=$('itemTitle').value.trim();
+
+ if(!searchText){
+  $('autoStatus').textContent='Please enter a movie or web series name.';
+  return;
+ }
+
+ $('autoStatus').textContent='Searching details...';
+ $('autoResults').innerHTML='';
+
+ try{
+  const searchUrl=
+   'https://en.wikipedia.org/w/rest.php/v1/search/page?q='+
+   encodeURIComponent(searchText)+'&limit=8';
+
+  const response=await fetch(searchUrl);
+
+  if(!response.ok)throw new Error('Search service unavailable');
+
+  const data=await response.json();
+  const pages=data.pages||[];
+
+  if(!pages.length){
+   $('autoStatus').textContent='No results found. Try another name.';
+   return;
+  }
+
+  $('autoStatus').textContent='Select the correct result:';
+
+  pages.forEach(page=>{
+   const result=document.createElement('div');
+   result.className='auto-result';
+
+   const img=document.createElement('img');
+   img.alt=page.title;
+   img.src=page.thumbnail?.url||'';
+   if(!page.thumbnail?.url)img.style.display='none';
+
+   const details=document.createElement('div');
+   details.className='details';
+
+   const heading=document.createElement('h4');
+   heading.textContent=page.title;
+
+   const description=document.createElement('p');
+   description.textContent=page.description||'Description unavailable';
+
+   const apply=document.createElement('button');
+   apply.className='red';
+   apply.textContent='Use This';
+
+   apply.onclick=async()=>{
+    try{
+     $('autoStatus').textContent='Loading selected details...';
+
+     const summaryUrl=
+      'https://en.wikipedia.org/api/rest_v1/page/summary/'+
+      encodeURIComponent(page.title.replace(/ /g,'_'));
+
+     const summaryResponse=await fetch(summaryUrl);
+
+     if(!summaryResponse.ok)throw new Error('Details unavailable');
+
+     const info=await summaryResponse.json();
+
+     $('itemTitle').value=info.title||page.title;
+
+     const poster=
+      info.originalimage?.source||
+      info.thumbnail?.source||
+      page.thumbnail?.url||'';
+
+     $('itemPoster').value=safeUrl(poster);
+
+     $('itemDescription').value=
+      info.extract||page.description||'';
+
+     $('autoStatus').textContent=
+      'Details filled. Review them before saving.';
+
+     $('autoResults').innerHTML='';
+    }catch(error){
+     $('autoStatus').textContent='Could not load details: '+error.message;
+    }
+   };
+
+   details.append(heading,description,apply);
+   result.append(img,details);
+   $('autoResults').append(result);
+  });
+
+ }catch(error){
+  $('autoStatus').textContent='Search failed. Check internet and try again.';
+  console.error(error);
+ }
+};
+
+$('clearAutoBtn').onclick=()=>{
+ $('autoResults').innerHTML='';
+ $('autoStatus').textContent='Search results cleared.';
+};
+
+/* Save content */
 $('saveItem').onclick=async()=>{
  const title=$('itemTitle').value.trim();
  const url=safeUrl($('itemUrl').value.trim());
@@ -522,14 +700,22 @@ $('saveItem').onclick=async()=>{
    createdAt:serverTimestamp()
   });
 
-  $('saveMsg').textContent='Content saved.';
+  $('saveMsg').textContent='Content saved successfully.';
+
   ['itemTitle','itemPoster','itemUrl','itemDescription'].forEach(id=>$(id).value='');
+
+  $('autoResults').innerHTML='';
+  $('autoStatus').textContent='Ready for next content.';
  }catch(e){
   $('saveMsg').textContent='Could not save: '+e.message;
  }
 };
 
-$('logoutBtn').onclick=()=>signOut(auth);
+$('logoutBtn').onclick=async()=>{
+ await signOut(auth);
+ $('adminModal').classList.remove('show');
+};
+
 </script>
 </body>
 </html>
