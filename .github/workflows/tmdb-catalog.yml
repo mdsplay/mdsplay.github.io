@@ -1,0 +1,154 @@
+
+name: MDSPLAY TMDB Movie Catalog
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 9 * * 1"
+
+jobs:
+  import-movies:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Firebase Admin
+        run: npm install firebase-admin
+
+      - name: Import 50 Hindi + 50 English movies
+        env:
+          TMDB_READ_ACCESS_TOKEN: ${{ secrets.TMDB_READ_ACCESS_TOKEN }}
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          node <<'NODE'
+          const admin = require('firebase-admin');
+
+          async function main() {
+            if (!process.env.TMDB_READ_ACCESS_TOKEN) {
+              throw new Error('TMDB secret is missing');
+            }
+            if (!process.env.FIREBASE_SERVICE_ACCOUNT) {
+              throw new Error('Firebase service account secret is missing');
+            }
+
+            const serviceAccount = JSON.parse(
+              process.env.FIREBASE_SERVICE_ACCOUNT
+            );
+
+            admin.initializeApp({
+              credential: admin.credential.cert(serviceAccount)
+            });
+
+            const db = admin.firestore();
+            const token = process.env.TMDB_READ_ACCESS_TOKEN;
+
+            const genres = {
+              28: 'Action', 12: 'Adventure', 16: 'Animation',
+              35: 'Comedy', 80: 'Crime', 99: 'Documentary',
+              18: 'Drama', 10751: 'Family', 14: 'Fantasy',
+              36: 'History', 27: 'Horror', 10402: 'Music',
+              9648: 'Mystery', 10749: 'Romance',
+              878: 'Science Fiction', 10770: 'TV Movie',
+              53: 'Thriller', 10752: 'War', 37: 'Western'
+            };
+
+            async function fetchMovies(language) {
+              const movies = [];
+
+              for (let page = 1; page <= 3 && movies.length < 50; page++) {
+                const url = new URL(
+                  'https://api.themoviedb.org/3/discover/movie'
+                );
+                url.searchParams.set('include_adult', 'false');
+                url.searchParams.set('sort_by', 'popularity.desc');
+                url.searchParams.set('with_original_language', language);
+                url.searchParams.set('page', page);
+                url.searchParams.set('language', 'en-US');
+
+                const response = await fetch(url, {
+                  headers: { Authorization: `Bearer ${token}` }
+                });
+
+                if (!response.ok) {
+                  throw new Error(`TMDB error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                movies.push(...(data.results || []));
+              }
+
+              return movies.slice(0, 50);
+            }
+
+            const [hindi, english] = await Promise.all([
+              fetchMovies('hi'),
+              fetchMovies('en')
+            ]);
+
+            const existing = await db.collection('content').get();
+            const knownIds = new Set(
+              existing.docs.map(doc => doc.get('tmdbId')).filter(Boolean)
+            );
+
+            const allMovies = [
+              ...hindi.map(movie => ({ ...movie, catalogLanguage: 'Hindi' })),
+              ...english.map(movie => ({ ...movie, catalogLanguage: 'English' }))
+            ];
+
+            let added = 0;
+            let skipped = 0;
+
+            for (const movie of allMovies) {
+              if (!movie.id || knownIds.has(movie.id)) {
+                skipped++;
+                continue;
+              }
+
+              const title = movie.title || movie.original_title;
+              if (!title) continue;
+
+              const genre = (movie.genre_ids || [])
+                .map(id => genres[id])
+                .filter(Boolean)
+                .join(', ');
+
+              await db.collection('content').add({
+                tmdbId: movie.id,
+                title,
+                category: 'Movie',
+                genre,
+                language: movie.catalogLanguage,
+                year: movie.release_date
+                  ? movie.release_date.slice(0, 4)
+                  : '',
+                poster: movie.poster_path
+                  ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+                  : '',
+                description: movie.overview || '',
+                url: '',
+                trending: false,
+                createdAt: admin.firestore.FieldValue.serverTimestamp()
+              });
+
+              knownIds.add(movie.id);
+              added++;
+            }
+
+            console.log(`Hindi fetched: ${hindi.length}`);
+            console.log(`English fetched: ${english.length}`);
+            console.log(`Added: ${added}`);
+            console.log(`Skipped duplicates: ${skipped}`);
+            console.log('Catalog import complete.');
+          }
+
+          main().catch(error => {
+            console.error(error);
+            process.exit(1);
+          });
+          NODE
